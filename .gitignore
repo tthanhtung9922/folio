@@ -31,3 +31,4 @@ yarn-error.log*
 
 # Docker
 *.tar
+.claude/
