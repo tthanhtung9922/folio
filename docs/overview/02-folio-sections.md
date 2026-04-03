@@ -54,14 +54,14 @@ Khu vực chứa các dev utility chạy ngay trên browser. Mỗi tool là mộ
 
 | Tool | Route | Status |
 |------|-------|--------|
-| **JWT Studio** | `/tools/jwt-decoder` | ✅ Live |
+| **JWT Decoder · Encoder** | `/tools/jwt-decoder-encoder` | ✅ Live |
 | Base64 Codec | `/tools/base64` | Planned |
 | JSON Formatter | `/tools/json-formatter` | Planned |
 | Hash Generator | `/tools/hash` | Planned |
 | URL Encoder | `/tools/url-encoder` | Planned |
 | Regex Tester | `/tools/regex` | Planned |
 
-> **Lưu ý:** JWT Studio vượt scope ban đầu — không chỉ decode mà còn encode và verify signature với HMAC secret key. Đây là hướng đúng: mỗi tool phải là một "studio" nhỏ hoàn chỉnh, không chỉ là wrapper đơn giản.
+> **Lưu ý:** JWT Decoder · Encoder vượt scope ban đầu — có đầy đủ decode (read-only), encode (editable header/payload/secret + algorithm selector HS256/384/512), verify signature, copy generated token, expiry warning. Đây là hướng đúng: mỗi tool phải là một "studio" nhỏ hoàn chỉnh, không chỉ là wrapper đơn giản.
 
 ### Tiến hoá theo thời gian
 

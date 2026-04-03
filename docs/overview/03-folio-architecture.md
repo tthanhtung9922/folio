@@ -417,20 +417,24 @@ web/src/
 │   ├── icon.svg                ← Favicon (ink bg + terracotta dot)
 │   ├── layout.tsx              ← Root layout: fonts, LayoutProvider, Navigation, CustomCursor
 │   ├── globals.css             ← Tailwind v4 @theme inline + design tokens + animations
-│   ├── page.tsx                ← Landing (client component, uses useLayout)
+│   ├── page.tsx                ← Landing (client component, uses useLayout + home.json)
 │   └── tools/
-│       ├── page.tsx            ← Tools listing — 2-col grid
-│       └── jwt-decoder/
-│           └── page.tsx        ← JWT Studio (encode / decode / verify)
+│       ├── page.tsx            ← Tools listing — 2-col grid (reads tools.json)
+│       └── jwt-decoder-encoder/
+│           └── page.tsx        ← JWT Decoder · Encoder (decode tab + encode tab)
 ├── components/
 │   ├── Navigation.tsx          ← Sticky nav + // preferences panel
 │   ├── CustomCursor.tsx        ← 10px terracotta dot, expands on hover
 │   ├── GridBackground.tsx
 │   ├── CodeHighlight.tsx       ← Shiki syntax highlighter (async)
 │   └── ui/
+│       ├── badge.tsx           ← Badge component (available/soon/default/verified/error)
 │       └── button.tsx          ← shadcn/ui Button
 ├── context/
 │   └── LayoutContext.tsx       ← isWide, isCustomCursor — persisted to localStorage
+├── data/
+│   ├── home.json               ← status, sections[], connect[] — edit here, not in code
+│   └── tools.json              ← tools[] — enabled flag controls visibility
 └── lib/
     └── utils.ts                ← cn() helper
 ```

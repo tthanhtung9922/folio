@@ -43,8 +43,18 @@ This project uses Next.js 16.2.2 — **breaking changes exist from prior version
 - `app/` — Next.js App Router pages. Tools live at `app/tools/<tool-name>/page.tsx`.
 - `app/icon.svg` — Custom favicon (replaces default Next.js favicon). SVG with ink background + terracotta dot.
 - `components/` — Shared UI components. `components/ui/` holds shadcn primitives.
+- `components/ui/badge.tsx` — `Badge` component with variants: `available`, `soon`, `default`, `verified`, `error`. Use for all status labels across the app.
+- `components/CodeHighlight.tsx` — Shiki-powered syntax highlighter. Wraps `codeToHtml` with `github-light-default` theme. Use this for any code/token output inside tools.
+- `components/GridBackground.tsx` — Fixed full-viewport grid overlay (z-[-1], pointer-events-none). Already rendered in `RootLayout`; do not add another instance.
 - `context/LayoutContext.tsx` — Global layout state, persisted to localStorage.
+- `data/` — JSON content files. All hardcoded page data lives here, not in components.
+  - `data/home.json` — `status`, `sections[]`, `connect[]` for the landing page.
+  - `data/tools.json` — `tools[]` for the tools directory.
+  - Each item has an `enabled` boolean — set `false` to hide without deleting.
 - `lib/utils.ts` — `cn()` helper (clsx + tailwind-merge).
+
+### Language
+The site targets Vietnamese users. All UI copy, tool descriptions, and in-app messages are written in Vietnamese. The HTML `lang` attribute is `"vi"` and both fonts include Vietnamese subsets.
 
 ### Layout system
 
@@ -81,7 +91,7 @@ When custom cursor is disabled, `cursor-pointer` on interactive elements restore
 |---|---|---|
 | `/` | Done | Landing page |
 | `/tools` | Done | Tool directory — 2-col grid |
-| `/tools/jwt-decoder` | Done | JWT encode/decode/verify |
+| `/tools/jwt-decoder-encoder` | Done | JWT decode / encode / verify — tab UI, HS256/384/512 |
 | `/showcase` | Planned | — |
 | `/lab` | Planned | — |
 | `/blog` | Planned | — |
@@ -133,14 +143,17 @@ className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transitio
 ## Adding a New Tool
 
 1. Create `web/src/app/tools/<tool-name>/page.tsx` as a `"use client"` component.
-2. Add an entry to the `tools` array in `web/src/app/tools/page.tsx` with `available: true`.
+2. Add an entry to `web/src/data/tools.json` with `available: true, enabled: true`.
 3. Use `useLayout()` for the container. Header pattern:
 ```tsx
 <div className="text-terracotta text-[11px] font-medium tracking-[0.15em] lowercase mb-4">
   {"// tools · tool-name"}
 </div>
 <h1 className="font-display text-[44px] leading-tight mb-4">Tool Name</h1>
+<p className="text-sm text-faded-ink border-l-2 border-terracotta pl-4 max-w-xl">
+  Tool description.
+</p>
 ```
 4. Keep all logic client-side — no server calls from tools.
 
-Reference: [web/src/app/tools/jwt-decoder/page.tsx](web/src/app/tools/jwt-decoder/page.tsx)
+Reference: [web/src/app/tools/jwt-decoder-encoder/page.tsx](web/src/app/tools/jwt-decoder-encoder/page.tsx)

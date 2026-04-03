@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 import { useLayout } from "@/context/LayoutContext";
+import rawTools from "@/data/tools.json";
 
 interface Tool {
   name: string;
@@ -9,53 +11,10 @@ interface Tool {
   category: string;
   href: string;
   available: boolean;
+  enabled: boolean;
 }
 
-const tools: Tool[] = [
-  {
-    name: "JWT Studio",
-    desc: "Giải mã, xác thực và mã hóa JSON Web Token ngay trên trình duyệt. Không gửi dữ liệu về máy chủ.",
-    category: "auth",
-    href: "/tools/jwt-decoder",
-    available: true,
-  },
-  {
-    name: "Base64 Codec",
-    desc: "Mã hóa và giải mã Base64 — hỗ trợ text thuần và file nhị phân.",
-    category: "encode",
-    href: "",
-    available: false,
-  },
-  {
-    name: "JSON Formatter",
-    desc: "Format, validate và minify JSON. Highlight lỗi cú pháp inline.",
-    category: "format",
-    href: "",
-    available: false,
-  },
-  {
-    name: "Hash Generator",
-    desc: "Tạo hash MD5, SHA-1, SHA-256 từ text hoặc file upload.",
-    category: "crypto",
-    href: "",
-    available: false,
-  },
-  {
-    name: "URL Encoder",
-    desc: "Encode và decode URL components. Parse và build query strings.",
-    category: "web",
-    href: "",
-    available: false,
-  },
-  {
-    name: "Regex Tester",
-    desc: "Test regular expression với live highlighting và match groups.",
-    category: "text",
-    href: "",
-    available: false,
-  },
-];
-
+const tools: Tool[] = rawTools.filter((t) => t.enabled);
 const availableCount = tools.filter((t) => t.available).length;
 
 export default function ToolsPage() {
@@ -65,7 +24,7 @@ export default function ToolsPage() {
     <main className="w-full">
       {/* ── Header ── */}
       <section className={`${maxWidthClass} ${transitionClass} mx-auto`}>
-        <div className="border-b-2 border-ink py-16 md:py-20">
+        <div className="border-b-2 border-ink py-10 md:py-14">
           <div
             className="animate-fade-up text-terracotta text-[11px] font-medium tracking-[0.15em] lowercase mb-8"
             style={{ animationDelay: "0ms" }}
@@ -81,22 +40,39 @@ export default function ToolsPage() {
             >
               Tools
             </h1>
-            <p
-              className="animate-fade-up text-ink text-base leading-relaxed self-end pb-1"
+
+            {/* Right meta column */}
+            <div
+              className="animate-fade-up flex flex-col justify-between gap-6"
               style={{ animationDelay: "160ms" }}
             >
-              Công cụ dev nhỏ, chạy hoàn toàn trên trình duyệt. Không cần đăng
-              nhập, không gửi dữ liệu về server.
-            </p>
+              {/* Category tags */}
+              <div className="flex flex-wrap gap-2 pt-1">
+                {[...new Set(tools.map((t) => t.category))].map((cat) => (
+                  <span
+                    key={cat}
+                    className="text-[10px] uppercase tracking-widest border border-parchment-border px-1.5 py-0.5 rounded-xs text-ghost-ink font-mono"
+                  >
+                    {cat}
+                  </span>
+                ))}
+              </div>
+
+              {/* Description */}
+              <p className="border-l-2 border-terracotta pl-4 text-sm text-faded-ink leading-relaxed pb-1">
+                Công cụ dev nhỏ, chạy hoàn toàn trên trình duyệt. Không cần
+                đăng nhập, không gửi dữ liệu về server.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ── Tool Grid ── */}
       <section
-        className={`${maxWidthClass} ${transitionClass} mx-auto py-16 md:py-20`}
+        className={`${maxWidthClass} ${transitionClass} mx-auto py-10 md:py-14`}
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-0">
           {tools.map((tool, i) => (
             <ToolCard key={tool.name} tool={tool} index={i} />
           ))}
@@ -111,7 +87,7 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
 
   const inner = (
     <div
-      className={`animate-fade-up group flex flex-col gap-5 py-8 border-t-[0.5px] border-parchment-border h-full ${
+      className={`animate-fade-up group flex flex-col gap-5 py-8 px-5 border-t-[0.5px] border-parchment-border h-full ${
         tool.available
           ? "hover:bg-warm-canvas/40 transition-colors duration-200"
           : "opacity-50"
@@ -124,15 +100,9 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
           {"// "}
           {tool.category}
         </span>
-        {tool.available ? (
-          <span className="text-[10px] uppercase tracking-widest border border-ink px-1.5 py-0.5 rounded-xs">
-            available
-          </span>
-        ) : (
-          <span className="text-[10px] uppercase tracking-widest border border-parchment-border px-1.5 py-0.5 rounded-xs text-ghost-ink">
-            soon
-          </span>
-        )}
+        <Badge variant={tool.available ? "available" : "soon"}>
+          {tool.available ? "available" : "soon"}
+        </Badge>
       </div>
 
       {/* Name */}

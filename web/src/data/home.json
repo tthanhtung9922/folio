@@ -1,0 +1,49 @@
+{
+  "status": {
+    "label": "building",
+    "title": "Đợt 1 — POC & Tools",
+    "description": "Xây dựng nền tảng cơ sở và bộ công cụ dev đầu tiên."
+  },
+  "sections": [
+    {
+      "index": "01",
+      "title": "Showcase",
+      "desc": "Trưng bày dự án — không chỉ là link GitHub mà còn là câu chuyện kỹ thuật.",
+      "href": "/showcase",
+      "enabled": true
+    },
+    {
+      "index": "02",
+      "title": "Tools",
+      "desc": "Dev utilities nhỏ chạy trên browser — mỗi tool giải quyết một vấn đề thật.",
+      "href": "/tools",
+      "enabled": true
+    },
+    {
+      "index": "03",
+      "title": "Lab",
+      "desc": "Communication & language lab — luyện kỹ năng làm việc quốc tế.",
+      "href": "/lab",
+      "enabled": true
+    },
+    {
+      "index": "04",
+      "title": "Blog",
+      "desc": "TIL + bài viết dài + changelog — ghi lại quá trình trưởng thành.",
+      "href": "/blog",
+      "enabled": true
+    },
+    {
+      "index": "05",
+      "title": "Journal",
+      "desc": "Decision records — kho tàng kinh nghiệm ra quyết định.",
+      "href": "/journal",
+      "enabled": true
+    }
+  ],
+  "connect": [
+    { "name": "github", "href": "#", "icon": "github", "enabled": true },
+    { "name": "linkedin", "href": "#", "icon": "linkedin", "enabled": true },
+    { "name": "email", "href": "#", "icon": "email", "enabled": true }
+  ]
+}

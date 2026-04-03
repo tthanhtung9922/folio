@@ -54,8 +54,9 @@ pnpm dev          # http://localhost:3000
 
 Tất cả chạy **hoàn toàn client-side**, không gọi bất kỳ API nào:
 
-- [x] **JWT Studio** — decode header + payload, encode với HMAC secret, verify signature, highlight expired claims. Route: `/tools/jwt-decoder`
-- [x] **Tools listing page** — `/tools` với 2-col grid, available/coming-soon status
+- [x] **JWT Decoder · Encoder** — decode (read-only parts), encode (editable header/payload/secret, algorithm selector HS256/384/512, copy button), verify signature, expiry warning. Route: `/tools/jwt-decoder-encoder`
+- [x] **Tools listing page** — `/tools` với 2-col grid, available/coming-soon status, category tags
+- [x] **Data layer** — `src/data/home.json` + `src/data/tools.json`: tách content khỏi code, `enabled` flag để bật/tắt từng item
 - [x] **Source control** — repo khởi tạo, push lên GitHub private
 - [ ] **JSON Formatter** — format / minify / validate, highlight lỗi cú pháp
 - [ ] **Base64 Codec** — encode/decode text và file

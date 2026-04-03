@@ -1,0 +1,50 @@
+[
+  {
+    "name": "JWT Decoder · Encoder",
+    "desc": "Giải mã, xác thực và mã hóa JSON Web Token ngay trên trình duyệt. Không gửi dữ liệu về máy chủ.",
+    "category": "auth",
+    "href": "/tools/jwt-decoder-encoder",
+    "available": true,
+    "enabled": true
+  },
+  {
+    "name": "Base64 Codec",
+    "desc": "Mã hóa và giải mã Base64 — hỗ trợ text thuần và file nhị phân.",
+    "category": "encode",
+    "href": "",
+    "available": false,
+    "enabled": true
+  },
+  {
+    "name": "JSON Formatter",
+    "desc": "Format, validate và minify JSON. Highlight lỗi cú pháp inline.",
+    "category": "format",
+    "href": "",
+    "available": false,
+    "enabled": true
+  },
+  {
+    "name": "Hash Generator",
+    "desc": "Tạo hash MD5, SHA-1, SHA-256 từ text hoặc file upload.",
+    "category": "crypto",
+    "href": "",
+    "available": false,
+    "enabled": true
+  },
+  {
+    "name": "URL Encoder",
+    "desc": "Encode và decode URL components. Parse và build query strings.",
+    "category": "web",
+    "href": "",
+    "available": false,
+    "enabled": true
+  },
+  {
+    "name": "Regex Tester",
+    "desc": "Test regular expression với live highlighting và match groups.",
+    "category": "text",
+    "href": "",
+    "available": false,
+    "enabled": true
+  }
+]
