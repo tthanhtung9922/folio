@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Background: ink dark -->
+  <rect width="32" height="32" rx="3" fill="#2C2420"/>
+  <!-- Lowercase "f" in serif style — references the nav logo -->
+  <text
+    x="7"
+    y="23"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="20"
+    font-weight="400"
+    fill="#FBF8F4"
+  >f</text>
+  <!-- Terracotta dot — mirrors the pulsing dot in the nav logo -->
+  <circle cx="25" cy="24" r="3.5" fill="#C4622D"/>
+</svg>

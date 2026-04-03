@@ -1,0 +1,125 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@theme inline {
+  /* 1. Khai báo các màu riêng biệt của Folio (để dùng trực tiếp, ví dụ: bg-terracotta) */
+  --color-parchment: #fbf8f4;
+  --color-warm-canvas: #f5ede0;
+  --color-ink: #2c2420;
+  --color-faded-ink: #6b5a4e;
+  --color-ghost-ink: #b8a898;
+  --color-terracotta: #c4622d;
+  --color-terracotta-pale: #f2e0d4;
+  --color-parchment-border: #e4d8cc;
+
+  /* Liên kết font chữ đã thiết lập ở layout.tsx */
+  --font-display: var(--font-playfair);
+  --font-mono: var(--font-montserrat);
+
+  /* BỔ SUNG: Ánh xạ lại biến cho shadcn/ui để không bị lỗi "unknown utility class" */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+}
+
+/* 2. Ghi đè biến của shadcn/ui bằng mã màu của Folio */
+:root {
+  --background: #fbf8f4; /* Parchment làm nền chính */
+  --foreground: #2c2420; /* Ink làm màu chữ chính */
+
+  --card: #fbf8f4;
+  --card-foreground: #2c2420;
+
+  --popover: #fbf8f4;
+  --popover-foreground: #2c2420;
+
+  --primary: #2c2420;
+  --primary-foreground: #fbf8f4;
+
+  --secondary: #f5ede0; /* Warm Canvas */
+  --secondary-foreground: #2c2420;
+
+  --muted: #f5ede0;
+  --muted-foreground: #6b5a4e; /* Faded Ink cho các text phụ */
+
+  --accent: #f2e0d4; /* Terracotta Pale làm nền khi hover */
+  --accent-foreground: #c4622d; /* Terracotta cho chữ khi hover */
+
+  --destructive: #c4622d;
+  --destructive-foreground: #fbf8f4;
+
+  --border: #e4d8cc; /* Parchment Border */
+  --input: #e4d8cc;
+  --ring: #c4622d; /* Terracotta cho viền focus */
+
+  /* Quy tắc Folio: Không bo góc tròn, tối đa 4px. Lấy chuẩn 2px cho Button */
+  --radius: 2px;
+}
+
+/* 3. Ink borders: dashed + mờ toàn cục */
+.border-ink {
+  border-style: dashed;
+  border-color: rgb(44 36 32 / 0.28);
+}
+
+/* 4. Entrance animation */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  opacity: 0;
+  animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 5. Thiết lập mặc định cho toàn bộ thẻ HTML */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  /* Ẩn con trỏ hệ thống chỉ khi custom cursor đang bật */
+  .custom-cursor-active * {
+    /* biome-ignore lint/complexity/noImportantStyles: cần override cursor-pointer và các utility class khác */
+    cursor: none !important;
+  }
+  body {
+    @apply bg-background text-foreground font-mono font-light;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display tracking-tight;
+  }
+}
