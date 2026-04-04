@@ -188,7 +188,7 @@ export default function HomeClient() {
             <Link
               key={item.index}
               href={item.href}
-              className="group flex items-start gap-6 md:gap-10 py-8 hover:bg-warm-canvas/50 transition-colors duration-200 border-t border-dashed border-ghost-ink/40"
+              className="group flex items-start gap-6 md:gap-10 py-8 px-4 md:px-6 hover:bg-warm-canvas/50 transition-colors duration-200 border-t border-dashed border-ghost-ink/40"
             >
               {/* Index */}
               <span className="hidden md:block w-10 shrink-0 text-[11px] tracking-widest text-ghost-ink font-mono pt-2">
@@ -239,7 +239,7 @@ export default function HomeClient() {
               </div>
 
               {/* Arrow */}
-              <span className="ml-auto text-terracotta opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200 font-mono text-lg pt-1">
+              <span className="shrink-0 text-terracotta opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200 font-mono text-lg pt-1">
                 →
               </span>
             </Link>
