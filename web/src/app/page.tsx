@@ -3,6 +3,7 @@
 import { Mail } from "lucide-react";
 import Link from "next/link";
 import { useLayout } from "@/context/LayoutContext";
+import { useLocale } from "@/context/LocaleContext";
 import homeData from "@/data/home.json";
 
 function IconGithub({ size = 14 }: { size?: number }) {
@@ -48,6 +49,7 @@ const { status } = homeData;
 
 export default function Home() {
   const { maxWidthClass, transitionClass } = useLayout();
+  const { locale, t } = useLocale();
 
   return (
     <main className="w-full">
@@ -69,11 +71,11 @@ export default function Home() {
                   className="animate-fade-up font-display text-[44px] md:text-[58px] leading-[1.1] tracking-[-0.02em] mb-10"
                   style={{ animationDelay: "80ms" }}
                 >
-                  Không chỉ là code.
+                  {t("hero.heading1")}
                   <br />
                   <div className="mt-4">
                     <span className="italic text-faded-ink">
-                      Đây là nền tảng cá nhân.
+                      {t("hero.heading2")}
                     </span>
                   </div>
                 </h1>
@@ -82,9 +84,7 @@ export default function Home() {
                   className="animate-fade-up border-l-2 border-terracotta pl-4 text-[15px] text-ink font-normal italic leading-relaxed max-w-96"
                   style={{ animationDelay: "160ms" }}
                 >
-                  Một hệ sinh thái sống nơi mọi khía cạnh của hành trình phát
-                  triển sự nghiệp đều có chỗ đứng. Không template, không
-                  platform có sẵn.
+                  {t("hero.description")}
                 </p>
               </div>
             </div>
@@ -104,16 +104,31 @@ export default function Home() {
                     {status.label}
                   </p>
                   <p className="font-display text-[22px] leading-snug text-ink">
-                    {status.title.split("—")[0]}
-                    {status.title.includes("—") && (
-                      <span className="italic text-faded-ink">
-                        {"— "}
-                        {status.title.split("—")[1]}
-                      </span>
-                    )}
+                    {(() => {
+                      const s = status as unknown as {
+                        title: string;
+                        title_en?: string;
+                      };
+                      const title =
+                        locale === "en" ? (s.title_en ?? s.title) : s.title;
+                      return (
+                        <>
+                          {title.split("—")[0]}
+                          {title.includes("—") && (
+                            <span className="italic text-faded-ink">
+                              {"— "}
+                              {title.split("—")[1]}
+                            </span>
+                          )}
+                        </>
+                      );
+                    })()}
                   </p>
                   <p className="text-[15px] text-ink font-normal italic mt-2 leading-relaxed">
-                    {status.description}
+                    {locale === "en"
+                      ? ((status as unknown as { description_en?: string })
+                          .description_en ?? status.description)
+                      : status.description}
                   </p>
                 </div>
               </div>
@@ -204,7 +219,10 @@ export default function Home() {
                 </div>
                 {/* Description */}
                 <p className="text-[15px] text-ink font-normal leading-relaxed">
-                  {item.desc}
+                  {locale === "en"
+                    ? ((item as unknown as { desc_en?: string }).desc_en ??
+                      item.desc)
+                    : item.desc}
                 </p>
                 {/* Tags */}
                 <div className="flex gap-3 flex-wrap">

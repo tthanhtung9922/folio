@@ -3,15 +3,15 @@
 @import "shadcn/tailwind.css";
 
 @theme inline {
-  /* 1. Khai báo các màu riêng biệt của Folio (để dùng trực tiếp, ví dụ: bg-terracotta) */
-  --color-parchment: #fbf8f4;
-  --color-warm-canvas: #f5ede0;
-  --color-ink: #2c2420;
-  --color-faded-ink: #6b5a4e;
-  --color-ghost-ink: #9a8878;
-  --color-terracotta: #c4622d;
-  --color-terracotta-pale: #f2e0d4;
-  --color-parchment-border: #e4d8cc;
+  /* 1. Màu Folio — dùng var() để hỗ trợ dark mode */
+  --color-parchment: var(--folio-parchment);
+  --color-warm-canvas: var(--folio-warm-canvas);
+  --color-ink: var(--folio-ink);
+  --color-faded-ink: var(--folio-faded-ink);
+  --color-ghost-ink: var(--folio-ghost-ink);
+  --color-terracotta: var(--folio-terracotta);
+  --color-terracotta-pale: var(--folio-terracotta-pale);
+  --color-parchment-border: var(--folio-parchment-border);
 
   /* Liên kết font chữ đã thiết lập ở layout.tsx */
   --font-display: var(--font-playfair);
@@ -43,44 +43,64 @@
   --radius-xl: calc(var(--radius) * 1.4);
 }
 
-/* 2. Ghi đè biến của shadcn/ui bằng mã màu của Folio */
+/* 2. Light palette — giá trị mặc định */
 :root {
-  --background: #fbf8f4; /* Parchment làm nền chính */
-  --foreground: #2c2420; /* Ink làm màu chữ chính */
+  --folio-parchment: #fbf8f4;
+  --folio-warm-canvas: #f5ede0;
+  --folio-ink: #2c2420;
+  --folio-faded-ink: #6b5a4e;
+  --folio-ghost-ink: #9a8878;
+  --folio-terracotta: #c4622d;
+  --folio-terracotta-pale: #f2e0d4;
+  --folio-parchment-border: #e4d8cc;
 
-  --card: #fbf8f4;
-  --card-foreground: #2c2420;
+  --background: var(--folio-parchment);
+  --foreground: var(--folio-ink);
 
-  --popover: #fbf8f4;
-  --popover-foreground: #2c2420;
+  --card: var(--folio-parchment);
+  --card-foreground: var(--folio-ink);
 
-  --primary: #2c2420;
-  --primary-foreground: #fbf8f4;
+  --popover: var(--folio-parchment);
+  --popover-foreground: var(--folio-ink);
 
-  --secondary: #f5ede0; /* Warm Canvas */
-  --secondary-foreground: #2c2420;
+  --primary: var(--folio-ink);
+  --primary-foreground: var(--folio-parchment);
 
-  --muted: #f5ede0;
-  --muted-foreground: #6b5a4e; /* Faded Ink cho các text phụ */
+  --secondary: var(--folio-warm-canvas);
+  --secondary-foreground: var(--folio-ink);
 
-  --accent: #f2e0d4; /* Terracotta Pale làm nền khi hover */
-  --accent-foreground: #c4622d; /* Terracotta cho chữ khi hover */
+  --muted: var(--folio-warm-canvas);
+  --muted-foreground: var(--folio-faded-ink);
 
-  --destructive: #c4622d;
-  --destructive-foreground: #fbf8f4;
+  --accent: var(--folio-terracotta-pale);
+  --accent-foreground: var(--folio-terracotta);
 
-  --border: #e4d8cc; /* Parchment Border */
-  --input: #e4d8cc;
-  --ring: #c4622d; /* Terracotta cho viền focus */
+  --destructive: var(--folio-terracotta);
+  --destructive-foreground: var(--folio-parchment);
 
-  /* Quy tắc Folio: Không bo góc tròn, tối đa 4px. Lấy chuẩn 2px cho Button */
+  --border: var(--folio-parchment-border);
+  --input: var(--folio-parchment-border);
+  --ring: var(--folio-terracotta);
+
   --radius: 2px;
+}
+
+/* 2b. Dark palette */
+.dark {
+  --folio-parchment: #1a1614;
+  --folio-warm-canvas: #241f1b;
+  --folio-ink: #ebe5de;
+  --folio-faded-ink: #a89888;
+  --folio-ghost-ink: #7a6a5a;
+  --folio-terracotta: #d4723d;
+  --folio-terracotta-pale: #3a2820;
+  --folio-parchment-border: #3a3028;
 }
 
 /* 3. Ink borders: dashed + mờ toàn cục */
 .border-ink {
   border-style: dashed;
-  border-color: rgb(44 36 32 / 0.28);
+  border-color: color-mix(in srgb, var(--folio-ink) 28%, transparent);
 }
 
 /* 4. Entrance animation */
@@ -109,15 +129,16 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgb(154 136 120 / 0.5);
+  background: color-mix(in srgb, var(--folio-ghost-ink) 50%, transparent);
   border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgb(107 90 78 / 0.7);
+  background: color-mix(in srgb, var(--folio-faded-ink) 70%, transparent);
 }
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgb(154 136 120 / 0.5) transparent;
+  scrollbar-color: color-mix(in srgb, var(--folio-ghost-ink) 50%, transparent)
+    transparent;
 }
 
 /* 5. Thiết lập mặc định cho toàn bộ thẻ HTML */

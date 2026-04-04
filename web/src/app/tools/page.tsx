@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { useLayout } from "@/context/LayoutContext";
+import { useLocale } from "@/context/LocaleContext";
 import rawTools from "@/data/tools.json";
 
 interface Tool {
   name: string;
   desc: string;
+  desc_en?: string;
   category: string;
   href: string;
   available: boolean;
@@ -19,6 +21,7 @@ const availableCount = tools.filter((t) => t.available).length;
 
 export default function ToolsPage() {
   const { maxWidthClass, transitionClass } = useLayout();
+  const { locale, t } = useLocale();
 
   return (
     <main className="w-full">
@@ -60,8 +63,7 @@ export default function ToolsPage() {
 
               {/* Description */}
               <p className="border-l-2 border-terracotta pl-4 text-[15px] text-ink font-normal italic leading-relaxed pb-1">
-                Công cụ dev nhỏ, chạy hoàn toàn trên trình duyệt. Không cần đăng
-                nhập, không gửi dữ liệu về server.
+                {t("tools.description")}
               </p>
             </div>
           </div>
@@ -74,7 +76,13 @@ export default function ToolsPage() {
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-0">
           {tools.map((tool, i) => (
-            <ToolCard key={tool.name} tool={tool} index={i} />
+            <ToolCard
+              key={tool.name}
+              tool={tool}
+              index={i}
+              locale={locale}
+              notReady={t("tools.notReady")}
+            />
           ))}
         </div>
       </section>
@@ -82,7 +90,17 @@ export default function ToolsPage() {
   );
 }
 
-function ToolCard({ tool, index }: { tool: Tool; index: number }) {
+function ToolCard({
+  tool,
+  index,
+  locale,
+  notReady,
+}: {
+  tool: Tool;
+  index: number;
+  locale: string;
+  notReady: string;
+}) {
   const delay = `${100 + index * 60}ms`;
 
   const inner = (
@@ -118,7 +136,7 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
 
       {/* Description */}
       <p className="text-sm text-ink font-normal leading-relaxed flex-1">
-        {tool.desc}
+        {locale === "en" ? tool.desc_en || tool.desc : tool.desc}
       </p>
 
       {/* Footer */}
@@ -129,7 +147,7 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
           </span>
         ) : (
           <span className="text-[11px] text-ghost-ink lowercase tracking-[0.08em]">
-            em chưa làm xong...
+            {notReady}
           </span>
         )}
       </div>

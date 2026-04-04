@@ -1,6 +1,6 @@
 # Folio — Kiến trúc kỹ thuật
 
-> **Last updated:** 2026-04-03 · **Version:** 1.2
+> **Last updated:** 2026-04-04 · **Version:** 1.3
 > **Constraint:** Toàn bộ stack phải free & open source. Target deployment: personal VPS.
 
 ---
@@ -415,26 +415,34 @@ Folio.Api/
 web/src/
 ├── app/
 │   ├── icon.svg                ← Favicon (ink bg + terracotta dot)
-│   ├── layout.tsx              ← Root layout: fonts, LayoutProvider, Navigation, CustomCursor
-│   ├── globals.css             ← Tailwind v4 @theme inline + design tokens + animations
-│   ├── page.tsx                ← Landing (client component, uses useLayout + home.json)
+│   ├── layout.tsx              ← Root layout: fonts, LayoutProvider, LocaleProvider, Navigation, CustomCursor
+│   ├── globals.css             ← Tailwind v4 @theme inline + :root/:dark CSS vars + animations
+│   ├── page.tsx                ← Landing (client component, uses useLayout + useLocale + home.json)
 │   └── tools/
 │       ├── page.tsx            ← Tools listing — 2-col grid (reads tools.json)
-│       └── jwt-decoder-encoder/
-│           └── page.tsx        ← JWT Decoder · Encoder (decode tab + encode tab)
+│       ├── jwt-decoder-encoder/
+│       │   └── page.tsx        ← JWT Decoder · Encoder (decode tab + encode tab)
+│       ├── json-formatter/
+│       │   └── page.tsx        ← JSON Formatter (format, compare, tree view)
+│       └── text-compare/
+│           └── page.tsx        ← Text Compare (inline + side-by-side diff)
 ├── components/
-│   ├── Navigation.tsx          ← Sticky nav + // preferences panel
-│   ├── CustomCursor.tsx        ← 10px terracotta dot, expands on hover
-│   ├── GridBackground.tsx
-│   ├── CodeHighlight.tsx       ← Shiki syntax highlighter (async)
+│   ├── Navigation.tsx          ← Sticky nav + // preferences panel (5 toggles)
+│   ├── CustomCursor.tsx        ← 10px terracotta dot, blend-mode switches on dark mode
+│   ├── GridBackground.tsx      ← Canvas tile bg, reads colors from CSS vars at effect init
+│   ├── CodeHighlight.tsx       ← Shiki syntax highlighter (github-light/dark-default)
 │   └── ui/
 │       ├── badge.tsx           ← Badge component (available/soon/default/verified/error)
 │       └── button.tsx          ← shadcn/ui Button
 ├── context/
-│   └── LayoutContext.tsx       ← isWide, isCustomCursor — persisted to localStorage
+│   ├── LayoutContext.tsx       ← isWide, isCustomCursor, isAnimated, isDarkMode — persisted to localStorage
+│   └── LocaleContext.tsx       ← locale ("vi"/"en"), t(key) — persisted to localStorage
+├── i18n/
+│   ├── vi.ts                   ← Vietnamese translations (source of truth, exports TranslationKey type)
+│   └── en.ts                   ← English translations (implements Record<TranslationKey, string>)
 ├── data/
 │   ├── home.json               ← status, sections[], connect[] — edit here, not in code
-│   └── tools.json              ← tools[] — enabled flag controls visibility
+│   └── tools.json              ← tools[] — enabled + desc_en fields
 └── lib/
     └── utils.ts                ← cn() helper
 ```

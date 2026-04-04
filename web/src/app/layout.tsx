@@ -5,6 +5,7 @@ import { CustomCursor } from "@/components/CustomCursor";
 import { GridBackground } from "@/components/GridBackground";
 import { Navigation } from "@/components/Navigation";
 import { LayoutProvider } from "@/context/LayoutContext";
+import { LocaleProvider } from "@/context/LocaleContext";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -33,11 +34,19 @@ export default function RootLayout({
   return (
     <html lang="vi" className={`${playfair.variable} ${montserrat.variable}`}>
       <body className="antialiased font-mono font-light">
+        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: flash prevention script with static content */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{if(localStorage.getItem('folio-dark-mode')==='true')document.documentElement.classList.add('dark');var l=localStorage.getItem('folio-locale');if(l)document.documentElement.lang=l}catch(e){}})()`,
+          }}
+        />
         <LayoutProvider>
-          <GridBackground />
-          <CustomCursor />
-          <Navigation />
-          {children}
+          <LocaleProvider>
+            <GridBackground />
+            <CustomCursor />
+            <Navigation />
+            {children}
+          </LocaleProvider>
         </LayoutProvider>
       </body>
     </html>

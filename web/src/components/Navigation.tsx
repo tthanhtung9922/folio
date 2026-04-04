@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useLayout } from "@/context/LayoutContext";
+import { useLocale } from "@/context/LocaleContext";
 
 export function Navigation() {
   const {
@@ -14,7 +15,10 @@ export function Navigation() {
     toggleCustomCursor,
     isAnimated,
     toggleAnimated,
+    isDarkMode,
+    toggleDarkMode,
   } = useLayout();
+  const { locale, toggleLocale } = useLocale();
 
   const [prefsOpen, setPrefsOpen] = useState(false);
   const prefsRef = useRef<HTMLDivElement>(null);
@@ -144,6 +148,50 @@ export function Navigation() {
                   }`}
                 >
                   {isAnimated ? "live" : "static"}
+                </span>
+              </button>
+
+              <div className="border-t-[0.5px] border-parchment-border mx-3" />
+
+              {/* Theme toggle */}
+              <button
+                type="button"
+                onClick={toggleDarkMode}
+                className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-warm-canvas transition-colors duration-150 cursor-pointer group"
+              >
+                <span className="text-[11px] lowercase tracking-[0.08em] text-faded-ink group-hover:text-ink transition-colors duration-150">
+                  theme
+                </span>
+                <span
+                  className={`text-[10px] uppercase tracking-widest border px-1.5 py-0.5 rounded-xs transition-colors duration-150 ${
+                    isDarkMode
+                      ? "border-terracotta text-terracotta"
+                      : "border-parchment-border group-hover:border-ink"
+                  }`}
+                >
+                  {isDarkMode ? "dark" : "light"}
+                </span>
+              </button>
+
+              <div className="border-t-[0.5px] border-parchment-border mx-3" />
+
+              {/* Language toggle */}
+              <button
+                type="button"
+                onClick={toggleLocale}
+                className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-warm-canvas transition-colors duration-150 cursor-pointer group"
+              >
+                <span className="text-[11px] lowercase tracking-[0.08em] text-faded-ink group-hover:text-ink transition-colors duration-150">
+                  language
+                </span>
+                <span
+                  className={`text-[10px] uppercase tracking-widest border px-1.5 py-0.5 rounded-xs transition-colors duration-150 ${
+                    locale === "en"
+                      ? "border-terracotta text-terracotta"
+                      : "border-parchment-border group-hover:border-ink"
+                  }`}
+                >
+                  {locale}
                 </span>
               </button>
 

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { CodeHighlight } from "@/components/CodeHighlight";
 import { Badge } from "@/components/ui/badge";
 import { useLayout } from "@/context/LayoutContext";
+import { useLocale } from "@/context/LocaleContext";
 
 type Mode = "decode" | "encode";
 type Alg = "HS256" | "HS384" | "HS512";
@@ -14,6 +15,7 @@ const ALG_OPTIONS: Alg[] = ["HS256", "HS384", "HS512"];
 
 export default function JwtDecoderEncoder() {
   const { maxWidthClass, transitionClass } = useLayout();
+  const { locale, t } = useLocale();
   const [mode, setMode] = useState<Mode>("decode");
   const [token, setToken] = useState("");
   const [headerStr, setHeaderStr] = useState(
@@ -149,8 +151,7 @@ export default function JwtDecoderEncoder() {
           JWT Decoder · Encoder
         </h1>
         <p className="text-[15px] text-ink font-normal italic border-l-2 border-terracotta pl-4 max-w-xl">
-          Giải mã, xác thực và mã hóa JSON Web Token ngay trên trình duyệt.
-          Không gửi dữ liệu về máy chủ.
+          {t("jwt.description")}
         </p>
       </div>
 
@@ -252,7 +253,7 @@ export default function JwtDecoderEncoder() {
                 type="text"
                 value={secret}
                 onChange={(e) => handleSecretChange(e.target.value)}
-                placeholder="Nhập secret key để xác thực..."
+                placeholder={t("jwt.secretPlaceholder")}
                 className="w-full bg-warm-canvas border-[0.5px] border-parchment-border focus:border-terracotta rounded-xs p-3 font-mono text-[14px] text-[#5B7A70] outline-none transition-colors duration-150"
               />
             </div>
@@ -262,14 +263,14 @@ export default function JwtDecoderEncoder() {
                 className={`p-4 border-[0.5px] rounded-xs ${isExpired ? "bg-terracotta-pale border-terracotta text-terracotta" : "bg-transparent border-parchment-border text-ink"}`}
               >
                 <span className="lowercase font-medium tracking-[0.08em] block mb-1">
-                  trạng thái (exp)
+                  {t("jwt.expStatus")}
                 </span>
                 <span className="text-[14px]">
-                  {isExpired
-                    ? "Token đã hết hạn vào: "
-                    : "Token sẽ hết hạn vào: "}
+                  {isExpired ? t("jwt.expired") : t("jwt.expiresAt")}
                   <span className="font-medium">
-                    {expiryDate.toLocaleString("vi-VN")}
+                    {expiryDate.toLocaleString(
+                      locale === "en" ? "en-US" : "vi-VN",
+                    )}
                   </span>
                 </span>
               </div>
@@ -357,7 +358,7 @@ export default function JwtDecoderEncoder() {
                 onChange={(e) =>
                   handleDataChange(headerStr, payloadStr, e.target.value)
                 }
-                placeholder="Nhập secret key..."
+                placeholder={t("jwt.secretPlaceholderShort")}
                 className="w-full bg-warm-canvas border-[0.5px] border-parchment-border focus:border-terracotta rounded-xs p-3 font-mono text-[14px] text-[#5B7A70] outline-none transition-colors duration-150"
               />
             </div>
@@ -411,14 +412,14 @@ export default function JwtDecoderEncoder() {
                 className={`p-4 border-[0.5px] rounded-xs ${isExpired ? "bg-terracotta-pale border-terracotta text-terracotta" : "bg-transparent border-parchment-border text-ink"}`}
               >
                 <span className="lowercase font-medium tracking-[0.08em] block mb-1">
-                  trạng thái (exp)
+                  {t("jwt.expStatus")}
                 </span>
                 <span className="text-[14px]">
-                  {isExpired
-                    ? "Token đã hết hạn vào: "
-                    : "Token sẽ hết hạn vào: "}
+                  {isExpired ? t("jwt.expired") : t("jwt.expiresAt")}
                   <span className="font-medium">
-                    {expiryDate.toLocaleString("vi-VN")}
+                    {expiryDate.toLocaleString(
+                      locale === "en" ? "en-US" : "vi-VN",
+                    )}
                   </span>
                 </span>
               </div>

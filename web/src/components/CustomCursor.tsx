@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useLayout } from "@/context/LayoutContext";
 
 export function CustomCursor() {
-  const { isCustomCursor } = useLayout();
+  const { isCustomCursor, isDarkMode } = useLayout();
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
   // Ẩn cursor lúc mới load trang chưa di chuyển chuột để tránh bị giật
@@ -54,7 +54,7 @@ export function CustomCursor() {
         // Thời gian chuyển đổi 0.15s
         transitionDuration: "150ms",
         // mix-blend-mode để tạo hiệu ứng xuyên thấu màu sắc với nền
-        mixBlendMode: "multiply",
+        mixBlendMode: isDarkMode ? "screen" : "multiply",
         // Di chuyển chấm tròn đến đúng tọa độ chuột (trừ đi 5px để căn giữa)
         // Khi isHovering = true -> Phóng to gấp 2.8 lần (thành 28px)
         transform: `translate3d(${position.x - 5}px, ${position.y - 5}px, 0) scale(${isHovering ? 2.8 : 1})`,

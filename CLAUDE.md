@@ -44,9 +44,11 @@ This project uses Next.js 16.2.2 — **breaking changes exist from prior version
 - `app/icon.svg` — Custom favicon (replaces default Next.js favicon). SVG with ink background + terracotta dot.
 - `components/` — Shared UI components. `components/ui/` holds shadcn primitives.
 - `components/ui/badge.tsx` — `Badge` component with variants: `available`, `soon`, `default`, `verified`, `error`. Use for all status labels across the app.
-- `components/CodeHighlight.tsx` — Shiki-powered syntax highlighter. Wraps `codeToHtml` with `github-light-default` theme. Use this for any code/token output inside tools.
+- `components/CodeHighlight.tsx` — Shiki-powered syntax highlighter. Wraps `codeToHtml` with `github-light-default` / `github-dark-default` theme (auto-switches with dark mode). Use this for any code/token output inside tools.
 - `components/GridBackground.tsx` — Canvas-based animated tile background (z-[-1], pointer-events-none). Already rendered in `RootLayout`; do not add another instance. Reads `isAnimated` from `LayoutContext`.
-- `context/LayoutContext.tsx` — Global layout state, persisted to localStorage.
+- `context/LayoutContext.tsx` — Global layout state (wide, cursor, animation, dark mode), persisted to localStorage.
+- `context/LocaleContext.tsx` — Locale state (`"vi"` / `"en"`), `t(key)` translation function, persisted to `localStorage("folio-locale")`. Wrap consumer components with `useLocale()`.
+- `i18n/vi.ts` / `i18n/en.ts` — Flat key-value translation maps. `vi.ts` exports `TranslationKey` type; `en.ts` implements `Record<TranslationKey, string>`. Add new strings to both files.
 - `data/` — JSON content files. All hardcoded page data lives here, not in components.
   - `data/home.json` — `status`, `sections[]` (with `en`, `tags`, `status` fields), `connect[]` for the landing page.
   - `data/tools.json` — `tools[]` for the tools directory.
@@ -54,7 +56,13 @@ This project uses Next.js 16.2.2 — **breaking changes exist from prior version
 - `lib/utils.ts` — `cn()` helper (clsx + tailwind-merge).
 
 ### Language
-The site targets Vietnamese users. All UI copy, tool descriptions, and in-app messages are written in Vietnamese. The HTML `lang` attribute is `"vi"` and both fonts include Vietnamese subsets.
+The site is bilingual (Vietnamese / English). Default locale is Vietnamese. A language toggle in the preferences panel switches to English and persists to `localStorage("folio-locale")`.
+
+- All UI strings are defined in `i18n/vi.ts` and `i18n/en.ts` as flat key-value maps.
+- Use `const { locale, t } = useLocale()` to access translations in any `"use client"` component.
+- Data files (`home.json`, `tools.json`) store both `desc` (Vietnamese) and `desc_en` (English) fields.
+- The HTML `lang` attribute is managed by `LocaleContext` (defaults to `"vi"` on the server, updated client-side).
+- Both fonts include Vietnamese subsets.
 
 ### Layout system
 
@@ -63,6 +71,7 @@ The site targets Vietnamese users. All UI copy, tool descriptions, and in-app me
 - `isWide` / `toggleWide` — switches max-width between `1080px` (standard) and `1600px` (wide)
 - `isCustomCursor` / `toggleCustomCursor` — toggles the custom cursor on/off
 - `isAnimated` / `toggleAnimated` — toggles the canvas background animation on/off
+- `isDarkMode` / `toggleDarkMode` — toggles dark mode; adds/removes `.dark` class on `document.documentElement`; persisted to `localStorage("folio-dark-mode")`
 
 Pages must wrap content with:
 ```tsx
@@ -70,7 +79,7 @@ const { maxWidthClass, transitionClass } = useLayout();
 <section className={`${maxWidthClass} ${transitionClass} mx-auto`}>
 ```
 
-All three toggles are persisted to localStorage (`folio-wide-mode`, `folio-custom-cursor`, `folio-bg-animation`) and survive page refresh.
+All four toggles are persisted to localStorage and survive page refresh.
 
 ### Navigation
 
@@ -78,6 +87,8 @@ The `//` button (top-right) opens a `// preferences` panel (`top-[calc(100%+22px
 - **layout** — standard / wide toggle
 - **cursor** — custom / default toggle
 - **background** — live / static toggle
+- **theme** — light / dark toggle
+- **language** — vi / en toggle
 
 All interactive elements (`<button>`, `<Link>`) must have `cursor-pointer` class so the system pointer shows correctly when custom cursor is off.
 
@@ -89,7 +100,7 @@ When custom cursor is disabled, `cursor-pointer` on interactive elements restore
 
 ### Background
 
-`GridBackground` renders a canvas with 88px parchment tiles on a near-parchment sub-surface (`rgb(244,240,235)`), with 1.5px grout gaps. When the cursor moves, a terracotta radial glow appears on the sub-surface and shows through the gaps. Controlled by `isAnimated` from `LayoutContext`; static mode draws the tile grid without animation.
+`GridBackground` reads tile and glow colors from CSS custom properties (`--folio-parchment`, `--folio-terracotta`, `--folio-warm-canvas`) at effect initialization — so colors automatically adapt to dark mode. `isDarkMode` is included in the `useEffect` dependency array to trigger a re-read when the theme changes. Renders 88px tiles with 1.5px grout gaps; a terracotta radial glow shows through the gaps on cursor move. Controlled by `isAnimated` from `LayoutContext`; static mode draws the tile grid without animation.
 
 ### Scrollbar
 
@@ -103,6 +114,7 @@ Custom styled in `globals.css`: 6px width, `ghost-ink/50` thumb, darkens on hove
 | `/tools` | Done | Tool directory — 2-col grid |
 | `/tools/jwt-decoder-encoder` | Done | JWT decode / encode / verify — tab UI, HS256/384/512 |
 | `/tools/json-formatter` | Done | Format/beautify, compare 2 JSONs, tree view |
+| `/tools/text-compare` | Done | Line-by-line text diff — inline and side-by-side modes |
 | `/showcase` | Planned | — |
 | `/lab` | Planned | — |
 | `/blog` | Planned | — |
@@ -113,14 +125,23 @@ Custom styled in `globals.css`: 6px width, `ghost-ink/50` thumb, darkens on hove
 Full spec in `docs/DESIGN.md`. Critical rules:
 
 **Colors** (Tailwind tokens in `globals.css`):
+
+Light mode (default):
 - `parchment` (#FBF8F4) — primary bg
 - `ink` (#2C2420) — primary text, structural borders
 - `faded-ink` (#6B5A4E) — secondary/supporting text
-- `ghost-ink` (#9A8878) — metadata, timestamps, muted labels *(updated from #B8A898)*
+- `ghost-ink` (#9A8878) — metadata, timestamps, muted labels
 - `terracotta` (#C4622D) — **the only accent** (hover, overline, active state)
 - `terracotta-pale` (#F2E0D4) — accent surfaces
 - `parchment-border` (#E4D8CC) — content dividers
 - `warm-canvas` (#F5EDE0) — secondary surfaces, hover backgrounds
+
+Dark mode (`.dark` class on `<html>`):
+- `parchment` → #1A1614, `warm-canvas` → #241F1B, `ink` → #EBE5DE
+- `faded-ink` → #A89888, `ghost-ink` → #7A6A5A
+- `terracotta` → #D4723D, `terracotta-pale` → #3A2820, `parchment-border` → #3A3028
+
+All Tailwind utilities auto-switch because `@theme inline` maps tokens to `var(--folio-*)` and the `.dark` class overrides those vars.
 
 **Typography:**
 - `font-display` → Playfair Display (h1–h6, display text). Italic variant used for emphasis/contrast.
@@ -170,3 +191,37 @@ className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transitio
 4. Keep all logic client-side — no server calls from tools.
 
 Reference: [web/src/app/tools/jwt-decoder-encoder/page.tsx](web/src/app/tools/jwt-decoder-encoder/page.tsx)
+
+## Claude Code Skills — Auto-Trigger Rules
+
+**Invoke skills automatically** when the user's prompt matches. Do not ask the user to run them manually.
+
+### Custom skills (this project)
+
+| Trigger | Skill |
+|---------|-------|
+| Tạo / scaffold / thêm tool mới | `/new-tool` |
+| Review / audit / kiểm tra design của component | `/design-check` |
+| Changelog / release notes / tổng kết thay đổi / what changed | `/changelog` |
+| Sẵn sàng deploy / kiểm tra trước deploy / pre-deployment | `/deploy-check` |
+
+### Plugin skills (installed)
+
+| Trigger | Skill |
+|---------|-------|
+| Hỏi về docs / API / cách dùng library (React, Next.js, Tailwind, Shiki, jose, shadcn, Biome, lucide…) | `context7` — fetch live docs trước khi trả lời |
+| Tạo UI component / page / interface mới với design quality cao | `frontend-design:frontend-design` |
+| Simplify / dọn / refactor code vừa viết | `simplify` |
+| Review PR / code review pull request | `code-review:code-review` |
+| Tạo / sửa / cải thiện skill | `skill-creator:skill-creator` |
+| Setup Claude Code automations / recommend hooks, skills, MCP | `claude-code-setup:claude-automation-recommender` |
+| Test UI trên browser / chụp screenshot / kiểm tra render | `playwright` |
+| Chạy task lặp lại theo interval / recurring | `loop` |
+| Schedule task / cron / chạy định kỳ | `schedule` |
+| Cấu hình Claude Code settings / thêm hook / sửa settings.json | `update-config` |
+| Đổi phím tắt / keyboard shortcut | `keybindings-help` |
+| Build app dùng Claude API / Anthropic SDK | `claude-api` |
+
+### Priority rule
+
+When multiple skills could apply, prefer the **most specific** one. Example: user asks to create a new tool page → `/new-tool` (not `frontend-design`). User asks to build a generic UI component not in the tools pattern → `frontend-design`.

@@ -8,23 +8,27 @@ const GROUT = 1.5;
 const RADIUS = 200;
 const LERP_SPEED = 0.06;
 
-// Parchment tile surface
-const TILE_R = 251;
-const TILE_G = 248;
-const TILE_B = 244;
-// Sub-surface — whisper darker than parchment, grout lines barely visible
-const SUB_R = 244;
-const SUB_G = 240;
-const SUB_B = 235;
-// Terracotta accent
-const TC_R = 196;
-const TC_G = 98;
-const TC_B = 45;
+function hexToRgb(hex: string): [number, number, number] {
+  const h = hex.replace("#", "");
+  return [
+    Number.parseInt(h.slice(0, 2), 16),
+    Number.parseInt(h.slice(2, 4), 16),
+    Number.parseInt(h.slice(4, 6), 16),
+  ];
+}
+
+function getCSSColor(varName: string): [number, number, number] {
+  const val = getComputedStyle(document.documentElement)
+    .getPropertyValue(varName)
+    .trim();
+  return hexToRgb(val);
+}
 
 export function GridBackground() {
-  const { isAnimated } = useLayout();
+  const { isAnimated, isDarkMode } = useLayout();
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: isDarkMode triggers canvas color re-read from CSS vars
   useEffect(() => {
     const canvasEl = canvasRef.current;
     if (!canvasEl) return;
@@ -33,6 +37,15 @@ export function GridBackground() {
 
     const canvas: HTMLCanvasElement = canvasEl;
     const ctx: CanvasRenderingContext2D = ctxEl;
+
+    // Read colors from CSS custom properties (supports dark mode)
+    const [TILE_R, TILE_G, TILE_B] = getCSSColor("--folio-parchment");
+    const [TC_R, TC_G, TC_B] = getCSSColor("--folio-terracotta");
+    // Sub-surface: slightly offset from parchment toward warm-canvas
+    const [WC_R, WC_G, WC_B] = getCSSColor("--folio-warm-canvas");
+    const SUB_R = Math.round(TILE_R + (WC_R - TILE_R) * 0.4);
+    const SUB_G = Math.round(TILE_G + (WC_G - TILE_G) * 0.4);
+    const SUB_B = Math.round(TILE_B + (WC_B - TILE_B) * 0.4);
 
     let mouseX = -9999;
     let mouseY = -9999;
@@ -53,8 +66,8 @@ export function GridBackground() {
         H / 2,
         Math.max(W, H) * 0.75,
       );
-      vg.addColorStop(0, "rgba(251,248,244,0)");
-      vg.addColorStop(1, "rgba(251,248,244,0.94)");
+      vg.addColorStop(0, `rgba(${TILE_R},${TILE_G},${TILE_B},0)`);
+      vg.addColorStop(1, `rgba(${TILE_R},${TILE_G},${TILE_B},0.94)`);
       ctx.fillStyle = vg;
       ctx.fillRect(0, 0, W, H);
     }
@@ -155,7 +168,7 @@ export function GridBackground() {
       window.removeEventListener("mouseleave", onMouseLeave);
       window.removeEventListener("resize", resize);
     };
-  }, [isAnimated]);
+  }, [isAnimated, isDarkMode]);
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[-1]">

@@ -2,7 +2,9 @@
   "status": {
     "label": "building",
     "title": "Đợt 1 — POC & Tools",
-    "description": "Xây dựng nền tảng cơ sở và bộ công cụ dev đầu tiên."
+    "title_en": "Phase 1 — POC & Tools",
+    "description": "Xây dựng nền tảng cơ sở và bộ công cụ dev đầu tiên.",
+    "description_en": "Building the foundation and first set of dev tools."
   },
   "sections": [
     {
@@ -10,6 +12,7 @@
       "title": "Showcase",
       "en": "project stories",
       "desc": "Trưng bày dự án — không chỉ là link GitHub mà còn là câu chuyện kỹ thuật.",
+      "desc_en": "Showcasing projects — not just GitHub links but the technical stories behind them.",
       "tags": ["portfolio", "case study", "tech writing"],
       "status": "planned",
       "href": "/showcase",
@@ -20,6 +23,7 @@
       "title": "Tools",
       "en": "dev utilities",
       "desc": "Dev utilities nhỏ chạy trên browser — mỗi tool giải quyết một vấn đề thật.",
+      "desc_en": "Small dev utilities running in the browser — each tool solves a real problem.",
       "tags": ["jwt", "json", "base64", "regex"],
       "status": "live",
       "href": "/tools",
@@ -30,6 +34,7 @@
       "title": "Lab",
       "en": "language & comm",
       "desc": "Communication & language lab — luyện kỹ năng làm việc quốc tế.",
+      "desc_en": "Communication & language lab — practicing skills for international work.",
       "tags": ["english", "writing", "international"],
       "status": "planned",
       "href": "/lab",
@@ -40,6 +45,7 @@
       "title": "Blog",
       "en": "writing & learning",
       "desc": "TIL + bài viết dài + changelog — ghi lại quá trình trưởng thành.",
+      "desc_en": "TIL + long-form articles + changelog — documenting the growth journey.",
       "tags": ["TIL", "long-form", "changelog"],
       "status": "planned",
       "href": "/blog",
@@ -50,6 +56,7 @@
       "title": "Journal",
       "en": "decision log",
       "desc": "Decision records — kho tàng kinh nghiệm ra quyết định.",
+      "desc_en": "Decision records — a treasury of decision-making experience.",
       "tags": ["decisions", "records", "reflection"],
       "status": "planned",
       "href": "/journal",

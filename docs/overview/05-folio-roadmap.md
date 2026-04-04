@@ -1,6 +1,6 @@
 # Folio — Lộ trình phát triển
 
-> **Last updated:** 2026-04-03 · **Version:** 1.5
+> **Last updated:** 2026-04-04 · **Version:** 1.6
 > **Triết lý:** Local-first. Build và dùng trên máy cá nhân trước, ổn định rồi mới lên VPS.
 
 ---
@@ -58,7 +58,10 @@ Tất cả chạy **hoàn toàn client-side**, không gọi bất kỳ API nào:
 - [x] **Tools listing page** — `/tools` với 2-col grid, available/coming-soon status, category tags
 - [x] **Data layer** — `src/data/home.json` + `src/data/tools.json`: tách content khỏi code, `enabled` flag để bật/tắt từng item
 - [x] **Source control** — repo khởi tạo, push lên GitHub private
-- [ ] **JSON Formatter** — format / minify / validate, highlight lỗi cú pháp
+- [x] **JSON Formatter** — format / beautify, compare 2 JSONs, tree view. Route: `/tools/json-formatter`
+- [x] **Text Compare** — line-by-line diff (inline + side-by-side modes), copy diff to clipboard. Route: `/tools/text-compare`
+- [x] **Dark / Light theme** — Tailwind v4 CSS var cascade, `.dark` class toggle, persisted to localStorage, flash prevention script
+- [x] **Vietnamese / English i18n** — `LocaleContext` + flat translation maps, language toggle in preferences panel, persisted to localStorage
 - [ ] **Base64 Codec** — encode/decode text và file
 - [ ] **Hash Generator** — MD5, SHA-1, SHA-256
 - [ ] **URL Encoder** — encode/decode, parse query strings

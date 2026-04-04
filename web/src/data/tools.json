@@ -2,6 +2,7 @@
   {
     "name": "JWT Decoder · Encoder",
     "desc": "Giải mã, xác thực và mã hóa JSON Web Token ngay trên trình duyệt. Không gửi dữ liệu về máy chủ.",
+    "desc_en": "Decode, verify and encode JSON Web Tokens right in your browser. No data sent to any server.",
     "category": "auth",
     "href": "/tools/jwt-decoder-encoder",
     "available": true,
@@ -10,6 +11,7 @@
   {
     "name": "Base64 Codec",
     "desc": "Mã hóa và giải mã Base64 — hỗ trợ text thuần và file nhị phân.",
+    "desc_en": "Encode and decode Base64 — supports plain text and binary files.",
     "category": "encode",
     "href": "",
     "available": false,
@@ -18,6 +20,7 @@
   {
     "name": "JSON Formatter",
     "desc": "Format, validate, so sánh và xem cấu trúc JSON. Hỗ trợ tự sửa lỗi cú pháp.",
+    "desc_en": "Format, validate, compare and view JSON structure. Supports auto-fix syntax errors.",
     "category": "format",
     "href": "/tools/json-formatter",
     "available": true,
@@ -26,6 +29,7 @@
   {
     "name": "Hash Generator",
     "desc": "Tạo hash MD5, SHA-1, SHA-256 từ text hoặc file upload.",
+    "desc_en": "Generate MD5, SHA-1, SHA-256 hashes from text or file upload.",
     "category": "crypto",
     "href": "",
     "available": false,
@@ -34,14 +38,25 @@
   {
     "name": "URL Encoder",
     "desc": "Encode và decode URL components. Parse và build query strings.",
+    "desc_en": "Encode and decode URL components. Parse and build query strings.",
     "category": "web",
     "href": "",
     "available": false,
     "enabled": true
   },
   {
+    "name": "Text Compare",
+    "desc": "So sánh hai đoạn văn bản — hiển thị khác biệt theo từng dòng.",
+    "desc_en": "Compare two text blocks — display line-by-line differences.",
+    "category": "text",
+    "href": "/tools/text-compare",
+    "available": true,
+    "enabled": true
+  },
+  {
     "name": "Regex Tester",
     "desc": "Test regular expression với live highlighting và match groups.",
+    "desc_en": "Test regular expressions with live highlighting and match groups.",
     "category": "text",
     "href": "",
     "available": false,

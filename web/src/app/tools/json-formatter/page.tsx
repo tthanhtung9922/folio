@@ -12,6 +12,7 @@ import { useState } from "react";
 import { CodeHighlight } from "@/components/CodeHighlight";
 import { Badge } from "@/components/ui/badge";
 import { useLayout } from "@/context/LayoutContext";
+import { useLocale } from "@/context/LocaleContext";
 
 type Mode = "format" | "compare" | "tree";
 type DiffType = "added" | "removed" | "modified";
@@ -188,6 +189,7 @@ function TreeNode({ data, depth = 0 }: { data: unknown; depth?: number }) {
 
 export default function JsonFormatter() {
   const { maxWidthClass, transitionClass } = useLayout();
+  const { t } = useLocale();
   const [mode, setMode] = useState<Mode>("format");
 
   // Format + Tree shared state
@@ -225,7 +227,7 @@ export default function JsonFormatter() {
       setError(null);
     } catch (e) {
       setParsed(null);
-      setError(e instanceof Error ? e.message : "JSON không hợp lệ");
+      setError(e instanceof Error ? e.message : t("json.invalid"));
     }
   };
 
@@ -240,9 +242,7 @@ export default function JsonFormatter() {
       setWasFixed(true);
     } catch (e) {
       setParsed(null);
-      setError(
-        e instanceof Error ? e.message : "Không thể tự sửa được JSON này",
-      );
+      setError(e instanceof Error ? e.message : t("json.cantFix"));
     }
   };
 
@@ -280,7 +280,7 @@ export default function JsonFormatter() {
       }
     } catch {
       setParsedA(null);
-      setErrorA("JSON không hợp lệ");
+      setErrorA(t("json.invalid"));
     }
   };
 
@@ -302,7 +302,7 @@ export default function JsonFormatter() {
       }
     } catch {
       setParsedB(null);
-      setErrorB("JSON không hợp lệ");
+      setErrorB(t("json.invalid"));
     }
   };
 
@@ -349,7 +349,7 @@ export default function JsonFormatter() {
       <textarea
         value={input}
         onChange={(e) => processInput(e.target.value)}
-        placeholder="Dán JSON vào đây..."
+        placeholder={t("json.placeholder")}
         spellCheck={false}
         className={`w-full min-h-[420px] bg-warm-canvas/30 border-[0.5px] ${
           error
@@ -374,7 +374,7 @@ export default function JsonFormatter() {
       )}
       {wasFixed && (
         <p className="text-[12px] text-[#5B7A70] font-mono">
-          JSON đã được tự động sửa lỗi cú pháp.
+          {t("json.autoFixed")}
         </p>
       )}
     </div>
@@ -393,8 +393,7 @@ export default function JsonFormatter() {
           JSON Formatter
         </h1>
         <p className="text-[15px] text-ink font-normal italic border-l-2 border-terracotta pl-4 max-w-xl">
-          Format, validate và so sánh JSON ngay trên trình duyệt. Hỗ trợ tự sửa
-          lỗi cú pháp và xem cấu trúc dạng tree.
+          {t("json.description")}
         </p>
       </div>
 
@@ -488,7 +487,7 @@ export default function JsonFormatter() {
             ) : (
               <div className="min-h-[420px] bg-warm-canvas/20 border-[0.5px] border-parchment-border rounded-xs flex items-center justify-center">
                 <span className="text-[12px] text-ghost-ink/60 font-mono">
-                  output sẽ hiển thị ở đây
+                  {t("json.outputHere")}
                 </span>
               </div>
             )}
@@ -516,7 +515,7 @@ export default function JsonFormatter() {
               <textarea
                 value={inputA}
                 onChange={(e) => handleChangeA(e.target.value)}
-                placeholder="Dán JSON A vào đây..."
+                placeholder={t("json.placeholderA")}
                 spellCheck={false}
                 className={`w-full min-h-[280px] bg-warm-canvas/30 border-[0.5px] ${
                   errorA
@@ -546,7 +545,7 @@ export default function JsonFormatter() {
               <textarea
                 value={inputB}
                 onChange={(e) => handleChangeB(e.target.value)}
-                placeholder="Dán JSON B vào đây..."
+                placeholder={t("json.placeholderB")}
                 spellCheck={false}
                 className={`w-full min-h-[280px] bg-warm-canvas/30 border-[0.5px] ${
                   errorB
@@ -600,7 +599,7 @@ export default function JsonFormatter() {
                 {diffEntries.length === 0 ? (
                   <div className="py-10 flex items-center justify-center">
                     <span className="text-[13px] text-ghost-ink font-mono">
-                      Hai JSON giống nhau hoàn toàn.
+                      {t("json.identical")}
                     </span>
                   </div>
                 ) : (
@@ -665,7 +664,7 @@ export default function JsonFormatter() {
           {!diffComputed && parsedA === null && parsedB === null && (
             <div className="border-[0.5px] border-dashed border-ghost-ink/30 rounded-xs py-10 flex items-center justify-center">
               <span className="text-[12px] text-ghost-ink/60 font-mono">
-                Dán JSON vào cả hai ô để so sánh tự động.
+                {t("json.comparePlaceholder")}
               </span>
             </div>
           )}
@@ -692,7 +691,7 @@ export default function JsonFormatter() {
             ) : (
               <div className="min-h-[420px] bg-warm-canvas/20 border-[0.5px] border-parchment-border rounded-xs flex items-center justify-center">
                 <span className="text-[12px] text-ghost-ink/60 font-mono">
-                  tree sẽ hiển thị ở đây
+                  {t("json.treeHere")}
                 </span>
               </div>
             )}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { codeToHtml } from "shiki";
+import { useLayout } from "@/context/LayoutContext";
 
 interface CodeHighlightProps {
   code: string;
@@ -10,6 +11,7 @@ interface CodeHighlightProps {
 
 export function CodeHighlight({ code, lang = "json" }: CodeHighlightProps) {
   const [html, setHtml] = useState<string>("");
+  const { isDarkMode } = useLayout();
 
   useEffect(() => {
     if (!code) {
@@ -21,7 +23,7 @@ export function CodeHighlight({ code, lang = "json" }: CodeHighlightProps) {
       try {
         const result = await codeToHtml(code, {
           lang,
-          theme: "github-light-default",
+          theme: isDarkMode ? "github-dark-default" : "github-light-default",
         });
         setHtml(result);
       } catch (error) {
@@ -31,7 +33,7 @@ export function CodeHighlight({ code, lang = "json" }: CodeHighlightProps) {
     }
 
     highlight();
-  }, [code, lang]);
+  }, [code, lang, isDarkMode]);
 
   if (!html) {
     return (
