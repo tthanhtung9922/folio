@@ -33,7 +33,7 @@
 - [x] `output: 'standalone'` trong `next.config.ts` — chuẩn bị cho Docker sau
 - [x] Áp dụng Terracotta Mono design system từ `DESIGN.md`
 - [x] UI polish — global dashed border-ink, canonical Tailwind classes, overline labels 11px/medium
-- [ ] Vitest setup
+- [x] Vitest setup
 
 Chạy local bằng dev server thông thường:
 
@@ -48,7 +48,7 @@ pnpm dev          # http://localhost:3000
 - [x] Danh sách 5 sections (Showcase, Tools, Lab, Blog, Journal)
 - [x] Links tới GitHub, LinkedIn, email
 - [x] Responsive (mobile-first)
-- [ ] SEO cơ bản — metadata, Open Graph
+- [x] SEO cơ bản — metadata, Open Graph
 
 ### 1C. Tools (đang thực hiện)
 
@@ -62,12 +62,12 @@ Tất cả chạy **hoàn toàn client-side**, không gọi bất kỳ API nào:
 - [x] **Text Compare** — line-by-line diff (inline + side-by-side modes), copy diff to clipboard. Route: `/tools/text-compare`
 - [x] **Dark / Light theme** — Tailwind v4 CSS var cascade, `.dark` class toggle, persisted to localStorage, flash prevention script
 - [x] **Vietnamese / English i18n** — `LocaleContext` + flat translation maps, language toggle in preferences panel, persisted to localStorage
-- [ ] **Base64 Codec** — encode/decode text và file
+- [x] **Base64 Codec** — encode/decode text và file. Route: `/tools/base64-codec`
 - [ ] **Hash Generator** — MD5, SHA-1, SHA-256
 - [ ] **URL Encoder** — encode/decode, parse query strings
 - [ ] **Regex Tester** — live highlighting, match groups
 
-### 1D. Kiểm tra với Docker local
+### 1D. Kiểm tra với Docker local ✅
 
 Trước khi lên VPS, chạy thử bản build production trên máy local để xác nhận Docker hoạt động đúng:
 
@@ -77,12 +77,13 @@ docker build -t folio-web ./web
 
 # Chạy container local
 docker run -p 3000:3000 folio-web
-# hoặc dùng npm script: npm run build && npm start
 
 # Mở http://localhost:3000 và kiểm tra
 ```
 
-**Điểm dừng:** POC hoạt động đúng trên local — cả `pnpm dev` lẫn Docker build đều OK.
+**Điểm dừng:** POC hoạt động đúng trên local — cả `npm run dev` lẫn Docker build đều OK.
+
+**Kết quả:** `web/Dockerfile` multi-stage (deps → builder → runner, non-root user). Xác nhận `/`, `/tools`, `/tools/base64-codec` trả về HTTP 200 từ container.
 
 ---
 
@@ -91,8 +92,8 @@ docker run -p 3000:3000 folio-web
 > **Điều kiện:** POC đã ổn định trên local. Không rush.
 > **Target:** 1–2 ngày khi sẵn sàng
 
-- [ ] Viết `web/Dockerfile` đầy đủ (multi-stage, standalone output)
-- [ ] Viết `infra/docker-compose.poc.yml` — chỉ một service `web`
+- [x] Viết `web/Dockerfile` đầy đủ (multi-stage, standalone output)
+- [x] Viết `infra/docker-compose.poc.yml` — chỉ một service `web` (+ `docker-compose.local.yml` để test local)
 - [ ] Viết `infra/Caddyfile` — chỉ một domain `folio.dev`
 - [ ] Setup VPS: cài Docker Engine + Caddy, trỏ DNS
 - [ ] Deploy lần đầu thủ công:

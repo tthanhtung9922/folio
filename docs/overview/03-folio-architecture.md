@@ -36,8 +36,10 @@ folio/                            ← root monorepo
 │   └── next.config.ts            ← output: 'standalone' bắt buộc
 │
 ├── infra/                        ← Infrastructure config (tất cả ở đây)
-│   ├── docker-compose.yml        ← Production
-│   ├── docker-compose.dev.yml    ← Dev overrides
+│   ├── docker-compose.poc.yml    ← POC deploy (Đợt 1): web only, dùng ghcr.io image
+│   ├── docker-compose.local.yml  ← Local smoke-test: dùng image đã build local
+│   ├── docker-compose.yml        ← Production đầy đủ (Đợt 2+): web + api + db + kuma
+│   ├── docker-compose.dev.yml    ← Dev local: chỉ db (Đợt 2+)
 │   ├── Caddyfile                 ← Reverse proxy + HTTPS
 │   └── postgres/
 │       └── init.sql
@@ -87,7 +89,7 @@ folio/                            ← root monorepo
 | Syntax highlight | Shiki | MIT ✅ |
 | OG image gen | **Satori** | MPL 2.0 ✅ — thay thế `@vercel/og` |
 | E2E test | Playwright | MIT ✅ |
-| Unit test | Vitest + Testing Library | MIT ✅ |
+| Unit test | Vitest + Testing Library | MIT ✅ — configured, `npm run test:run` |
 
 ### Infrastructure — VPS
 
@@ -258,27 +260,35 @@ ENTRYPOINT ["dotnet", "Folio.Api.dll"]
 ### `web/Dockerfile`
 
 ```dockerfile
+# Stage 1: deps (production only)
 FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm ci --omit=dev
 
-FROM node:22-alpine AS build
+# Stage 2: builder (full deps + build)
+FROM node:22-alpine AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+COPY package.json package-lock.json ./
+RUN npm ci
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
-# Next.js standalone — image nhỏ, không cần node_modules đầy đủ
-FROM node:22-alpine AS runtime
+# Stage 3: runner (minimal, non-root)
+FROM node:22-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-COPY --from=build /app/.next/standalone ./
-COPY --from=build /app/.next/static ./.next/static
-COPY --from=build /app/public ./public
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+USER nextjs
 EXPOSE 3000
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
 CMD ["node", "server.js"]
 ```
 
@@ -411,21 +421,33 @@ Folio.Api/
 
 ### Cấu trúc hiện tại (Đợt 1)
 
+Mỗi page dùng **server wrapper + client component** pattern:
+- `page.tsx` — Server Component, export `metadata` (SEO), render client component
+- `_client.tsx` — `"use client"` component chứa toàn bộ UI + logic
+
 ```
 web/src/
 ├── app/
 │   ├── icon.svg                ← Favicon (ink bg + terracotta dot)
-│   ├── layout.tsx              ← Root layout: fonts, LayoutProvider, LocaleProvider, Navigation, CustomCursor
+│   ├── layout.tsx              ← Root layout: fonts + global metadata template, LayoutProvider, LocaleProvider, Navigation
 │   ├── globals.css             ← Tailwind v4 @theme inline + :root/:dark CSS vars + animations
-│   ├── page.tsx                ← Landing (client component, uses useLayout + useLocale + home.json)
+│   ├── page.tsx                ← Server wrapper: metadata cho / (home)
+│   ├── _home_client.tsx        ← Client: Landing page UI
 │   └── tools/
-│       ├── page.tsx            ← Tools listing — 2-col grid (reads tools.json)
+│       ├── page.tsx            ← Server wrapper: metadata cho /tools
+│       ├── _tools_client.tsx   ← Client: Tools listing — 2-col grid (reads tools.json)
 │       ├── jwt-decoder-encoder/
-│       │   └── page.tsx        ← JWT Decoder · Encoder (decode tab + encode tab)
+│       │   ├── page.tsx        ← Server wrapper + metadata
+│       │   └── _client.tsx     ← Client: JWT Decoder · Encoder (decode tab + encode tab)
 │       ├── json-formatter/
-│       │   └── page.tsx        ← JSON Formatter (format, compare, tree view)
-│       └── text-compare/
-│           └── page.tsx        ← Text Compare (inline + side-by-side diff)
+│       │   ├── page.tsx        ← Server wrapper + metadata
+│       │   └── _client.tsx     ← Client: JSON Formatter (format, compare, tree view)
+│       ├── text-compare/
+│       │   ├── page.tsx        ← Server wrapper + metadata
+│       │   └── _client.tsx     ← Client: Text Compare (inline + side-by-side diff)
+│       └── base64-codec/
+│           ├── page.tsx        ← Server wrapper + metadata
+│           └── _client.tsx     ← Client: Base64 encode/decode (text + file)
 ├── components/
 │   ├── Navigation.tsx          ← Sticky nav + // preferences panel (5 toggles)
 │   ├── CustomCursor.tsx        ← 10px terracotta dot, blend-mode switches on dark mode
@@ -443,6 +465,9 @@ web/src/
 ├── data/
 │   ├── home.json               ← status, sections[], connect[] — edit here, not in code
 │   └── tools.json              ← tools[] — enabled + desc_en fields
+├── test/
+│   ├── setup.ts                ← @testing-library/jest-dom import
+│   └── utils.test.ts           ← sample: cn() unit tests
 └── lib/
     └── utils.ts                ← cn() helper
 ```

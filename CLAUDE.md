@@ -19,9 +19,11 @@ npm run dev      # Start dev server at http://localhost:3000
 npm run build    # Production build
 npm run lint     # Biome check (lint + format check)
 npm run format   # Biome format --write (auto-fix formatting)
+npm run test     # Vitest in watch mode
+npm run test:run # Vitest single run (CI)
 ```
 
-No test suite is configured yet.
+Tests live in `web/src/test/`. Config: [web/vitest.config.ts](web/vitest.config.ts).
 
 ## Next.js Version Warning
 
@@ -32,7 +34,8 @@ This project uses Next.js 16.2.2 — **breaking changes exist from prior version
 - **Linter/Formatter:** Biome (not ESLint/Prettier). Config at [web/biome.json](web/biome.json). Indentation: 2 spaces.
 - **Styling:** Tailwind CSS v4 with `@theme inline` in [web/src/app/globals.css](web/src/app/globals.css). No `tailwind.config.ts` file — all config is in CSS.
 - **React Compiler:** Enabled (`reactCompiler: true` in next.config.ts). This affects memoization behavior.
-- **Output:** Standalone (Docker-ready).
+- **Output:** Standalone (Docker-ready) — `output: 'standalone'` in next.config.ts.
+- **Docker:** [web/Dockerfile](web/Dockerfile) — 3-stage multi-stage build (deps → builder → runner). Runner uses non-root `nextjs` user. Build: `docker build -t folio-web ./web`. Run: `docker run -p 3000:3000 folio-web`.
 
 ## Architecture
 
@@ -115,6 +118,7 @@ Custom styled in `globals.css`: 6px width, `ghost-ink/50` thumb, darkens on hove
 | `/tools/jwt-decoder-encoder` | Done | JWT decode / encode / verify — tab UI, HS256/384/512 |
 | `/tools/json-formatter` | Done | Format/beautify, compare 2 JSONs, tree view |
 | `/tools/text-compare` | Done | Line-by-line text diff — inline and side-by-side modes |
+| `/tools/base64-codec` | Done | Encode/decode Base64 — text and binary file support |
 | `/showcase` | Planned | — |
 | `/lab` | Planned | — |
 | `/blog` | Planned | — |
@@ -176,21 +180,57 @@ className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transitio
 
 ## Adding a New Tool
 
-1. Create `web/src/app/tools/<tool-name>/page.tsx` as a `"use client"` component.
-2. Add an entry to `web/src/data/tools.json` with `available: true, enabled: true`.
-3. Use `useLayout()` for the container. Header pattern:
-```tsx
-<div className="text-terracotta text-[11px] font-medium tracking-[0.15em] lowercase mb-4">
-  {"// tools · tool-name"}
-</div>
-<h1 className="font-display text-[44px] leading-tight mb-4">Tool Name</h1>
-<p className="text-[15px] text-ink font-normal italic border-l-2 border-terracotta pl-4 max-w-xl">
-  Tool description.
-</p>
-```
-4. Keep all logic client-side — no server calls from tools.
+Each tool uses a **server wrapper + client component** pattern so metadata can be exported from a Server Component:
 
-Reference: [web/src/app/tools/jwt-decoder-encoder/page.tsx](web/src/app/tools/jwt-decoder-encoder/page.tsx)
+1. Create `web/src/app/tools/<tool-name>/_client.tsx` — the full `"use client"` component with all logic.
+2. Create `web/src/app/tools/<tool-name>/page.tsx` — a server component that exports `metadata` and renders `<ToolClient />`.
+3. Add an entry to `web/src/data/tools.json` with `available: true, enabled: true, href: "/tools/<tool-name>"`.
+4. Add i18n strings to both `web/src/i18n/vi.ts` and `web/src/i18n/en.ts`.
+5. Keep all logic client-side in `_client.tsx` — no server calls from tools.
+
+### `page.tsx` (server wrapper)
+```tsx
+import type { Metadata } from "next";
+import ToolNameClient from "./_client";
+
+export const metadata: Metadata = {
+  title: "Tool Name",
+  description: "Tool description for SEO.",
+  openGraph: { title: "Tool Name · Folio", url: "https://folio.dev/tools/tool-name" },
+};
+
+export default function ToolNamePage() {
+  return <ToolNameClient />;
+}
+```
+
+### `_client.tsx` header pattern
+```tsx
+"use client";
+// ... imports
+
+export default function ToolNameClient() {
+  const { maxWidthClass, transitionClass } = useLayout();
+  const { t } = useLocale();
+
+  return (
+    <main className={`${maxWidthClass} ${transitionClass} mx-auto py-12 md:py-16`}>
+      <div className="mb-10 border-b-2 border-ink pb-8">
+        <div className="text-terracotta text-[11px] font-medium tracking-[0.15em] lowercase mb-4">
+          {"// tools · tool-name"}
+        </div>
+        <h1 className="text-[44px] font-display leading-tight mb-4">Tool Name</h1>
+        <p className="text-[15px] text-ink font-normal italic border-l-2 border-terracotta pl-4 max-w-xl">
+          {t("toolName.description")}
+        </p>
+      </div>
+      {/* tool content */}
+    </main>
+  );
+}
+```
+
+Reference: [web/src/app/tools/base64-codec/](web/src/app/tools/base64-codec/)
 
 ## Claude Code Skills — Auto-Trigger Rules
 

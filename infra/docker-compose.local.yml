@@ -1,0 +1,13 @@
+# Dùng để test production build trên máy local
+# Trước khi chạy: docker build -t folio-web ./web
+#
+# Chạy: docker compose -f infra/docker-compose.local.yml up -d
+# Mở:   http://localhost:3000
+services:
+  web:
+    image: folio-web:latest
+    container_name: folio-web-local
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production

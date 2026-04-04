@@ -36,6 +36,20 @@ export const en: Record<TranslationKey, string> = {
   "json.comparePlaceholder":
     "Paste JSON into both panels to compare automatically.",
 
+  // ── Base64 Codec tool ──
+  "base64.description":
+    "Encode and decode Base64 — supports plain text and binary files. Runs entirely in your browser.",
+  "base64.inputPlaceholder": "Paste text here to encode or decode...",
+  "base64.outputPlaceholder": "output will appear here",
+  "base64.invalidBase64": "Invalid Base64",
+  "base64.dropOrClick": "Drop a file here or click to select",
+  "base64.fileSelected": "File selected",
+  "base64.encodeFile": "encode file",
+  "base64.decodeAndDownload": "decode & download",
+  "base64.pasteBase64": "Paste Base64 here to decode and download...",
+  "base64.invalidFileBase64": "Invalid Base64 or cannot decode as file",
+  "base64.outputFilePlaceholder": "base64 output will appear here",
+
   // ── Text Compare tool ──
   "textCompare.description":
     "Compare two text blocks — display line-by-line differences.",

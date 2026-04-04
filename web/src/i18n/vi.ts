@@ -33,6 +33,20 @@ export const vi = {
   "json.treeHere": "tree sẽ hiển thị ở đây",
   "json.comparePlaceholder": "Dán JSON vào cả hai ô để so sánh tự động.",
 
+  // ── Base64 Codec tool ──
+  "base64.description":
+    "Mã hóa và giải mã Base64 — hỗ trợ text thuần và file nhị phân. Chạy hoàn toàn trên trình duyệt.",
+  "base64.inputPlaceholder": "Dán văn bản vào đây để mã hóa hoặc giải mã...",
+  "base64.outputPlaceholder": "kết quả sẽ hiển thị ở đây",
+  "base64.invalidBase64": "Base64 không hợp lệ",
+  "base64.dropOrClick": "Kéo thả file vào đây hoặc click để chọn",
+  "base64.fileSelected": "File đã chọn",
+  "base64.encodeFile": "encode file",
+  "base64.decodeAndDownload": "decode & download",
+  "base64.pasteBase64": "Dán Base64 vào đây để decode và tải về...",
+  "base64.invalidFileBase64": "Base64 không hợp lệ hoặc không thể decode thành file",
+  "base64.outputFilePlaceholder": "kết quả base64 sẽ hiển thị ở đây",
+
   // ── Text Compare tool ──
   "textCompare.description":
     "So sánh hai đoạn văn bản — hiển thị khác biệt theo từng dòng.",
