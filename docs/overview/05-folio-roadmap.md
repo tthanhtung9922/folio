@@ -91,6 +91,7 @@ docker run -p 3000:3000 folio-web
 
 > **Điều kiện:** POC đã ổn định trên local. Không rush.
 > **Target:** 1–2 ngày khi sẵn sàng
+> **Trạng thái:** ⏸ Tạm hoãn — chưa mua tên miền, chưa thuê VPS. Chuyển sang Đợt 2.
 
 - [x] Viết `web/Dockerfile` đầy đủ (multi-stage, standalone output)
 - [x] Viết `infra/docker-compose.poc.yml` — chỉ một service `web` (+ `docker-compose.local.yml` để test local)

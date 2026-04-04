@@ -1,7 +1,7 @@
 # Dùng để test production build trên máy local
 # Trước khi chạy: docker build -t folio-web ./web
 #
-# Chạy: docker compose -f infra/docker-compose.local.yml up -d
+# Chạy: docker compose -f .\infra\docker-compose.local.yml down && docker compose -f .\infra\docker-compose.local.yml up --build -d
 # Mở:   http://localhost:3000
 services:
   web:
