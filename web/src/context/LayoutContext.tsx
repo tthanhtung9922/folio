@@ -48,9 +48,9 @@ export function LayoutProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
-  // MẸO: Dùng 2560px thay vì 100% (hoặc full) để CSS có thể tính toán animation mượt mà
+  // Wide: 1600px ≈ tỷ lệ vàng so với 2560px (62.5%), ≈ √2 × standard (1080px)
   const maxWidthClass = isWide
-    ? "max-w-[2560px] px-8 md:px-12"
+    ? "max-w-[1600px] px-8 md:px-16"
     : "max-w-[1080px] px-[32px]";
 
   // Chuẩn hoá animation: thời gian 0.6s, gia tốc cubic-bezier cực mượt của Folio

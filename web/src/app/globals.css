@@ -100,6 +100,26 @@
   animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(184 168 152 / 0.5);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(107 90 78 / 0.7);
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(184 168 152 / 0.5) transparent;
+}
+
 /* 5. Thiết lập mặc định cho toàn bộ thẻ HTML */
 @layer base {
   * {
@@ -109,6 +129,13 @@
   /* Ẩn con trỏ hệ thống chỉ khi custom cursor đang bật */
   .custom-cursor-active * {
     /* biome-ignore lint/complexity/noImportantStyles: cần override cursor-pointer và các utility class khác */
+    cursor: none !important;
+  }
+  /* Ẩn con trỏ trên scrollbar khi custom cursor bật (pseudo-elements không match *) */
+  /* biome-ignore lint/complexity/noImportantStyles: cần override cursor mặc định của scrollbar */
+  html.custom-cursor-active ::-webkit-scrollbar,
+  html.custom-cursor-active ::-webkit-scrollbar-thumb,
+  html.custom-cursor-active ::-webkit-scrollbar-track {
     cursor: none !important;
   }
   body {
