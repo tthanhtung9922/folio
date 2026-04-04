@@ -40,13 +40,27 @@ cd api
 
 ## Bước 2 — Pin SDK version bằng `global.json`
 
-Vẫn đang ở `api/`, chạy:
+Trước tiên, xem danh sách SDK đang cài trên máy:
 
 ```bash
-dotnet new globaljson --sdk-version 10.0.100 --roll-forward latestMinor
+dotnet --list-sdks
 ```
 
-> **Tại sao cần bước này?** Khi máy cài nhiều phiên bản .NET, `global.json` đảm bảo project luôn dùng đúng SDK bất kể SDK nào được cài sau. `latestMinor` cho phép dùng patch release mới hơn (ví dụ `10.0.101`) nhưng không nhảy lên `10.1.x`.
+Output ví dụ:
+
+```
+10.0.201 [C:\Program Files\dotnet\sdk]
+```
+
+Lấy version đầy đủ từ output đó (ví dụ `10.0.201`), sau đó chạy:
+
+```bash
+dotnet new globaljson --sdk-version 10.0.201 --roll-forward latestPatch
+```
+
+> **Tại sao cần bước này?** Khi máy cài nhiều phiên bản .NET, `global.json` đảm bảo project luôn dùng đúng SDK. `latestPatch` cho phép dùng patch release mới hơn trong cùng feature band (ví dụ `10.0.202`) nhưng không nhảy lên feature band khác (`10.0.300`).
+
+> **Lưu ý version:** Thay `10.0.201` bằng version thực tế từ output `dotnet --list-sdks` trên máy bạn. Phải dùng version đầy đủ 3 phần — không được viết `10.0` hay `10`.
 
 Output kỳ vọng:
 
@@ -97,9 +111,9 @@ dotnet new classlib -n Folio.Domain -o src/Folio.Domain
 dotnet new classlib -n Folio.Infrastructure -o src/Folio.Infrastructure
 ```
 
-> **Lưu ý `--use-controllers`:** Từ .NET 8 trở đi, `dotnet new webapi` mặc định tạo project kiểu **Minimal APIs** (không có Controllers folder). Flag `--use-controllers` bật lại mô hình Controllers truyền thống — phù hợp với Clean Architecture vì cho phép tách rõ routing, DI, và business logic.
+> **Lưu ý `--use-controllers`:** Từ .NET 8 trở đi, `dotnet new webapi` mặc định tạo project theo kiểu **Minimal APIs**. Flag `--use-controllers` bật lại mô hình Controllers truyền thống — phù hợp với Clean Architecture.
 
-> **OpenAPI mặc định bật:** Template `webapi` trong .NET 9/10 tích hợp sẵn **Scalar UI** (thay thế Swagger UI) để test API. Truy cập tại `http://localhost:5000/scalar` sau khi chạy.
+> **OpenAPI + Scalar:** Template `webapi` trong .NET 10 tích hợp sẵn `Microsoft.AspNetCore.OpenApi` và **Scalar UI** để test API. Sau khi chạy, truy cập tại `http://localhost:5000/scalar/v1` (chỉ available ở môi trường Development).
 
 Vai trò từng project:
 
@@ -112,26 +126,45 @@ Vai trò từng project:
 
 ---
 
-## Bước 6 — Add tất cả vào Solution
+## Bước 6 — Xóa các file mẫu không cần thiết
 
-Trong .NET 9+, `dotnet sln add` hỗ trợ nhiều file cùng lúc. Vẫn đang ở `api/`:
+Template `webapi` và `classlib` sinh ra các file placeholder cần xóa trước khi bắt đầu code thật.
+
+Trong **Windows Terminal**, vẫn ở `api/`:
 
 ```bash
-dotnet sln Folio.sln add src/Folio.Api/Folio.Api.csproj src/Folio.Application/Folio.Application.csproj src/Folio.Domain/Folio.Domain.csproj src/Folio.Infrastructure/Folio.Infrastructure.csproj
-```
+# Xóa file mẫu của webapi template
+rm src/Folio.Api/Controllers/WeatherForecastController.cs
+rm src/Folio.Api/WeatherForecast.cs
 
-Output kỳ vọng (4 dòng):
-
-```
-Project `src/Folio.Api/Folio.Api.csproj` added to the solution.
-Project `src/Folio.Application/Folio.Application.csproj` added to the solution.
-Project `src/Folio.Domain/Folio.Domain.csproj` added to the solution.
-Project `src/Folio.Infrastructure/Folio.Infrastructure.csproj` added to the solution.
+# Xóa file mẫu của classlib template
+rm src/Folio.Application/Class1.cs
+rm src/Folio.Domain/Class1.cs
+rm src/Folio.Infrastructure/Class1.cs
 ```
 
 ---
 
-## Bước 7 — Add Project References
+## Bước 7 — Add tất cả vào Solution
+
+Vẫn đang ở `api/`:
+
+```bash
+dotnet sln Folio.sln add src/Folio.Api/Folio.Api.csproj
+dotnet sln Folio.sln add src/Folio.Application/Folio.Application.csproj
+dotnet sln Folio.sln add src/Folio.Domain/Folio.Domain.csproj
+dotnet sln Folio.sln add src/Folio.Infrastructure/Folio.Infrastructure.csproj
+```
+
+Output mỗi lệnh:
+
+```
+Project `src/Folio.Api/Folio.Api.csproj` added to the solution.
+```
+
+---
+
+## Bước 8 — Add Project References
 
 Luật DDD: dependency chỉ đi vào trong — `Domain` không biết gì về `Application` hay `Infrastructure`.
 
@@ -168,7 +201,7 @@ Reference `..\Folio.Domain\Folio.Domain.csproj` added to the project.
 
 ---
 
-## Bước 8 — Mở Solution trong Visual Studio 2026
+## Bước 9 — Mở Solution trong Visual Studio 2026
 
 Trong Terminal (vẫn ở `api/`):
 
@@ -176,8 +209,10 @@ Trong Terminal (vẫn ở `api/`):
 start Folio.sln
 ```
 
-Visual Studio sẽ mở tự động. Nếu không thấy **Solution Explorer**:
-- Menu **View** (thanh menu trên cùng) → **Solution Explorer**
+Visual Studio sẽ mở tự động. Nếu máy cài nhiều phiên bản Visual Studio và file mở sai version: đóng lại, mở **Visual Studio 2026** trực tiếp từ Start Menu → menu **File** → **Open** → **Project/Solution** → chọn file `api/Folio.sln`.
+
+Nếu không thấy **Solution Explorer** sau khi mở:
+- Menu **View** → **Solution Explorer**
 - Hoặc phím tắt: `Ctrl + Alt + L`
 
 Cấu trúc kỳ vọng trong Solution Explorer:
@@ -195,7 +230,7 @@ Solution 'Folio' (4 projects)
 
 ---
 
-## Bước 9 — Kiểm tra build
+## Bước 10 — Kiểm tra build
 
 Trong Terminal, từ thư mục `api/`:
 
@@ -227,9 +262,15 @@ folio/
     ├── Folio.sln
     └── src/
         ├── Folio.Api/
+        │   ├── Controllers/        ← trống (đã xóa WeatherForecastController)
+        │   ├── Program.cs
+        │   └── Folio.Api.csproj
         ├── Folio.Application/
+        │   └── Folio.Application.csproj
         ├── Folio.Domain/
+        │   └── Folio.Domain.csproj
         └── Folio.Infrastructure/
+            └── Folio.Infrastructure.csproj
 ```
 
 ---
