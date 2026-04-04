@@ -13,8 +13,8 @@
     "desc": "Mã hóa và giải mã Base64 — hỗ trợ text thuần và file nhị phân.",
     "desc_en": "Encode and decode Base64 — supports plain text and binary files.",
     "category": "encode",
-    "href": "",
-    "available": false,
+    "href": "/tools/base64-codec",
+    "available": true,
     "enabled": true
   },
   {

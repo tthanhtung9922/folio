@@ -22,8 +22,33 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Folio",
-  description: "My personal developer platform and digital garden.",
+  title: {
+    default: "Folio — Trần Thanh Tùng",
+    template: "%s · Folio",
+  },
+  description:
+    "Nền tảng cá nhân của Trần Thanh Tùng — developer tools, showcase, blog và journal. Xây dựng bởi một software engineer.",
+  metadataBase: new URL("https://folio.dev"),
+  openGraph: {
+    type: "website",
+    locale: "vi_VN",
+    url: "https://folio.dev",
+    siteName: "Folio",
+    title: "Folio — Trần Thanh Tùng",
+    description:
+      "Nền tảng cá nhân — tools, showcase, blog, journal. Local-first, built in public.",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Folio" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Folio — Trần Thanh Tùng",
+    description:
+      "Nền tảng cá nhân — tools, showcase, blog, journal. Local-first, built in public.",
+    images: ["/og.png"],
+  },
+  robots: { index: true, follow: true },
+  authors: [{ name: "Trần Thanh Tùng" }],
+  keywords: ["folio", "developer tools", "portfolio", "software engineer"],
 };
 
 export default function RootLayout({
