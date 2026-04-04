@@ -43,6 +43,19 @@ Ví dụ không đạt:
 
 > "Tạo file `AppDbContext.cs` trong project."
 
+### Bắt buộc research web trước khi hướng dẫn backend
+
+Trước khi viết hoặc cập nhật bất kỳ hướng dẫn backend nào, Claude **PHẢI** dùng `WebSearch` để tìm thông tin mới nhất. Không được dựa vào training data vì .NET / EF Core / ASP.NET Core thay đổi nhanh và có nhiều breaking changes giữa các phiên bản.
+
+Checklist bắt buộc trước khi viết hướng dẫn:
+
+- **CLI commands:** Search `dotnet new <template> .NET 10 options 2026` — flags hay thay đổi giữa các version (ví dụ: `--use-controllers`, `--format sln` vs `.slnx`)
+- **NuGet packages:** Search tên package + `latest version 2026` — version number thay đổi, API có thể khác
+- **Breaking changes:** Search `<technology> breaking changes .NET 10` — đặc biệt quan trọng khi upgrade major version
+- **Default behaviors:** Search `<command> default .NET 10` — defaults hay bị đảo ngược giữa versions (ví dụ: `dotnet new sln` mặc định `.slnx` từ .NET 10)
+
+Sau khi research xong mới được viết hướng dẫn. Nếu tìm thấy thông tin mâu thuẫn giữa các nguồn, ưu tiên: **learn.microsoft.com** > **devblogs.microsoft.com** > các nguồn khác.
+
 Frontend (`web/`) hoạt động bình thường — không bị ảnh hưởng bởi rule này.
 
 ## Commands (run from `web/`)
