@@ -392,7 +392,7 @@ export default function JsonFormatter() {
         <h1 className="text-[44px] font-display leading-tight mb-4">
           JSON Formatter
         </h1>
-        <p className="text-sm text-faded-ink border-l-2 border-terracotta pl-4 max-w-xl">
+        <p className="text-[15px] text-ink font-normal italic border-l-2 border-terracotta pl-4 max-w-xl">
           Format, validate và so sánh JSON ngay trên trình duyệt. Hỗ trợ tự sửa
           lỗi cú pháp và xem cấu trúc dạng tree.
         </p>

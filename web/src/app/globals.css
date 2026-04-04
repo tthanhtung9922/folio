@@ -8,7 +8,7 @@
   --color-warm-canvas: #f5ede0;
   --color-ink: #2c2420;
   --color-faded-ink: #6b5a4e;
-  --color-ghost-ink: #b8a898;
+  --color-ghost-ink: #9a8878;
   --color-terracotta: #c4622d;
   --color-terracotta-pale: #f2e0d4;
   --color-parchment-border: #e4d8cc;
@@ -109,7 +109,7 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgb(184 168 152 / 0.5);
+  background: rgb(154 136 120 / 0.5);
   border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -117,7 +117,7 @@
 }
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgb(184 168 152 / 0.5) transparent;
+  scrollbar-color: rgb(154 136 120 / 0.5) transparent;
 }
 
 /* 5. Thiết lập mặc định cho toàn bộ thẻ HTML */

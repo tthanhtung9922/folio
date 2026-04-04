@@ -8,35 +8,50 @@
     {
       "index": "01",
       "title": "Showcase",
+      "en": "project stories",
       "desc": "Trưng bày dự án — không chỉ là link GitHub mà còn là câu chuyện kỹ thuật.",
+      "tags": ["portfolio", "case study", "tech writing"],
+      "status": "planned",
       "href": "/showcase",
       "enabled": true
     },
     {
       "index": "02",
       "title": "Tools",
+      "en": "dev utilities",
       "desc": "Dev utilities nhỏ chạy trên browser — mỗi tool giải quyết một vấn đề thật.",
+      "tags": ["jwt", "json", "base64", "regex"],
+      "status": "live",
       "href": "/tools",
       "enabled": true
     },
     {
       "index": "03",
       "title": "Lab",
+      "en": "language & comm",
       "desc": "Communication & language lab — luyện kỹ năng làm việc quốc tế.",
+      "tags": ["english", "writing", "international"],
+      "status": "planned",
       "href": "/lab",
       "enabled": true
     },
     {
       "index": "04",
       "title": "Blog",
+      "en": "writing & learning",
       "desc": "TIL + bài viết dài + changelog — ghi lại quá trình trưởng thành.",
+      "tags": ["TIL", "long-form", "changelog"],
+      "status": "planned",
       "href": "/blog",
       "enabled": true
     },
     {
       "index": "05",
       "title": "Journal",
+      "en": "decision log",
       "desc": "Decision records — kho tàng kinh nghiệm ra quyết định.",
+      "tags": ["decisions", "records", "reflection"],
+      "status": "planned",
       "href": "/journal",
       "enabled": true
     }

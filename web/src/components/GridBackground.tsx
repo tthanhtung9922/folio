@@ -1,23 +1,28 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useLayout } from "@/context/LayoutContext";
 
-const GRID = 32;
+const TILE = 88;
+const GROUT = 1.5;
 const RADIUS = 200;
-const MAX_DISP = 20;
-const LERP_SPEED = 0.07;
-const GRID_ALPHA = 0.28;
-const STEP = 6;
+const LERP_SPEED = 0.06;
 
-const ACCENT_R = 196;
-const ACCENT_G = 98;
-const ACCENT_B = 45;
-
-const GRID_R = 228;
-const GRID_G = 216;
-const GRID_B = 204;
+// Parchment tile surface
+const TILE_R = 251;
+const TILE_G = 248;
+const TILE_B = 244;
+// Sub-surface — whisper darker than parchment, grout lines barely visible
+const SUB_R = 244;
+const SUB_G = 240;
+const SUB_B = 235;
+// Terracotta accent
+const TC_R = 196;
+const TC_G = 98;
+const TC_B = 45;
 
 export function GridBackground() {
+  const { isAnimated } = useLayout();
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -26,7 +31,6 @@ export function GridBackground() {
     const ctxEl = canvasEl.getContext("2d");
     if (!ctxEl) return;
 
-    // Re-declare với kiểu non-null để TypeScript không complain trong closures
     const canvas: HTMLCanvasElement = canvasEl;
     const ctx: CanvasRenderingContext2D = ctxEl;
 
@@ -35,13 +39,54 @@ export function GridBackground() {
     let lerpX = -9999;
     let lerpY = -9999;
     let rafId: number;
+    let running = true;
+
+    const g2 = GROUT / 2;
+    const tileW = TILE - GROUT;
+
+    function drawVignette(W: number, H: number) {
+      const vg = ctx.createRadialGradient(
+        W / 2,
+        H / 2,
+        Math.min(W, H) * 0.18,
+        W / 2,
+        H / 2,
+        Math.max(W, H) * 0.75,
+      );
+      vg.addColorStop(0, "rgba(251,248,244,0)");
+      vg.addColorStop(1, "rgba(251,248,244,0.94)");
+      ctx.fillStyle = vg;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    function drawGrid(W: number, H: number) {
+      const cols = Math.ceil(W / TILE) + 1;
+      const rows = Math.ceil(H / TILE) + 1;
+      ctx.fillStyle = `rgb(${TILE_R},${TILE_G},${TILE_B})`;
+      for (let row = 0; row <= rows; row++) {
+        for (let col = 0; col <= cols; col++) {
+          ctx.fillRect(col * TILE + g2, row * TILE + g2, tileW, tileW);
+        }
+      }
+    }
 
     function resize() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+      if (!isAnimated) drawStatic();
     }
 
-    function draw() {
+    function drawStatic() {
+      const W = canvas.width;
+      const H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = `rgb(${SUB_R},${SUB_G},${SUB_B})`;
+      ctx.fillRect(0, 0, W, H);
+      drawGrid(W, H);
+      drawVignette(W, H);
+    }
+
+    function drawFrame() {
       const W = canvas.width;
       const H = canvas.height;
 
@@ -50,117 +95,42 @@ export function GridBackground() {
 
       ctx.clearRect(0, 0, W, H);
 
-      // ── Layer 1: Nền parchment ──────────────────────────────────────
-      ctx.fillStyle = "#FBF8F4";
+      // Layer 1: Sub-surface
+      ctx.fillStyle = `rgb(${SUB_R},${SUB_G},${SUB_B})`;
       ctx.fillRect(0, 0, W, H);
 
-      // ── Layer 2: Terracotta glow dưới cursor ────────────────────────
+      // Layer 2: Terracotta glow on sub-surface — shows through grout gaps
       if (mouseX > -100) {
-        const accentGrd = ctx.createRadialGradient(
+        const grd = ctx.createRadialGradient(
           lerpX,
           lerpY,
           0,
           lerpX,
           lerpY,
-          RADIUS * 1.2,
+          RADIUS,
         );
-        accentGrd.addColorStop(
-          0,
-          `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},0.13)`,
-        );
-        accentGrd.addColorStop(
-          0.5,
-          `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},0.05)`,
-        );
-        accentGrd.addColorStop(
-          1,
-          `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},0)`,
-        );
-        ctx.fillStyle = accentGrd;
+        grd.addColorStop(0, `rgba(${TC_R},${TC_G},${TC_B},0.65)`);
+        grd.addColorStop(0.35, `rgba(${TC_R},${TC_G},${TC_B},0.22)`);
+        grd.addColorStop(1, `rgba(${TC_R},${TC_G},${TC_B},0)`);
+        ctx.fillStyle = grd;
         ctx.fillRect(0, 0, W, H);
       }
 
-      // ── Layer 3: Lưới bị biến dạng theo cursor ─────────────────────
-      ctx.lineWidth = 0.8;
+      // Layer 3: Fixed tile grid (covers sub-surface, grout gaps expose the glow)
+      drawGrid(W, H);
 
-      // Đường ngang
-      for (let gy = 0; gy <= H + GRID; gy += GRID) {
-        ctx.beginPath();
-        let firstPoint = true;
+      // Layer 4: Vignette
+      drawVignette(W, H);
 
-        for (let gx = 0; gx <= W + STEP; gx += STEP) {
-          const dx = lerpX - gx;
-          const dy = lerpY - gy;
-          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-          const rawForce = Math.max(0, 1 - dist / RADIUS);
-          const force = rawForce * rawForce;
-
-          const px = gx + (dx / dist) * force * MAX_DISP;
-          const py = gy + (dy / dist) * force * MAX_DISP;
-          const alpha = GRID_ALPHA * (1 - force * 0.75);
-
-          ctx.strokeStyle = `rgba(${GRID_R},${GRID_G},${GRID_B},${alpha.toFixed(3)})`;
-
-          if (firstPoint) {
-            ctx.moveTo(px, py);
-            firstPoint = false;
-          } else {
-            ctx.lineTo(px, py);
-          }
-        }
-        ctx.stroke();
+      if (running) {
+        rafId = requestAnimationFrame(drawFrame);
       }
-
-      // Đường dọc
-      for (let gx = 0; gx <= W + GRID; gx += GRID) {
-        ctx.beginPath();
-        let firstPoint = true;
-
-        for (let gy = 0; gy <= H + STEP; gy += STEP) {
-          const dx = lerpX - gx;
-          const dy = lerpY - gy;
-          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-          const rawForce = Math.max(0, 1 - dist / RADIUS);
-          const force = rawForce * rawForce;
-
-          const px = gx + (dx / dist) * force * MAX_DISP;
-          const py = gy + (dy / dist) * force * MAX_DISP;
-          const alpha = GRID_ALPHA * (1 - force * 0.75);
-
-          ctx.strokeStyle = `rgba(${GRID_R},${GRID_G},${GRID_B},${alpha.toFixed(3)})`;
-
-          if (firstPoint) {
-            ctx.moveTo(px, py);
-            firstPoint = false;
-          } else {
-            ctx.lineTo(px, py);
-          }
-        }
-        ctx.stroke();
-      }
-
-      // ── Layer 4: Vignette cạnh màn hình ────────────────────────────
-      const vigGrd = ctx.createRadialGradient(
-        W / 2,
-        H / 2,
-        Math.min(W, H) * 0.18,
-        W / 2,
-        H / 2,
-        Math.max(W, H) * 0.75,
-      );
-      vigGrd.addColorStop(0, "rgba(251,248,244,0)");
-      vigGrd.addColorStop(1, "rgba(251,248,244,0.82)");
-      ctx.fillStyle = vigGrd;
-      ctx.fillRect(0, 0, W, H);
-
-      rafId = requestAnimationFrame(draw);
     }
 
     const onMouseMove = (e: MouseEvent) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
     };
-
     const onMouseLeave = () => {
       mouseX = -9999;
       mouseY = -9999;
@@ -171,15 +141,21 @@ export function GridBackground() {
     window.addEventListener("resize", resize);
 
     resize();
-    rafId = requestAnimationFrame(draw);
+
+    if (isAnimated) {
+      rafId = requestAnimationFrame(drawFrame);
+    } else {
+      drawStatic();
+    }
 
     return () => {
+      running = false;
       cancelAnimationFrame(rafId);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseleave", onMouseLeave);
       window.removeEventListener("resize", resize);
     };
-  }, []);
+  }, [isAnimated]);
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[-1]">

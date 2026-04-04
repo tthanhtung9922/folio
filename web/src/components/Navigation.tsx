@@ -12,6 +12,8 @@ export function Navigation() {
     transitionClass,
     isCustomCursor,
     toggleCustomCursor,
+    isAnimated,
+    toggleAnimated,
   } = useLayout();
 
   const [prefsOpen, setPrefsOpen] = useState(false);
@@ -78,7 +80,7 @@ export function Navigation() {
           </button>
 
           {prefsOpen && (
-            <div className="absolute top-[calc(100%+10px)] right-0 w-52.5 bg-background border-2 border-ink rounded-xs shadow-[4px_4px_0px_0px_rgba(44,36,32,0.08)]">
+            <div className="absolute top-[calc(100%+22px)] right-0 w-52.5 bg-background border-2 border-ink rounded-xs shadow-[4px_4px_0px_0px_rgba(44,36,32,0.08)]">
               <div className="px-3 pt-3 pb-2">
                 <span className="text-[10px] tracking-[0.15em] text-terracotta lowercase">
                   {"// preferences"}
@@ -120,6 +122,28 @@ export function Navigation() {
                   }`}
                 >
                   {isCustomCursor ? "custom" : "default"}
+                </span>
+              </button>
+
+              <div className="border-t-[0.5px] border-parchment-border mx-3" />
+
+              {/* Animation toggle */}
+              <button
+                type="button"
+                onClick={toggleAnimated}
+                className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-warm-canvas transition-colors duration-150 cursor-pointer group"
+              >
+                <span className="text-[11px] lowercase tracking-[0.08em] text-faded-ink group-hover:text-ink transition-colors duration-150">
+                  background
+                </span>
+                <span
+                  className={`text-[10px] uppercase tracking-widest border px-1.5 py-0.5 rounded-xs transition-colors duration-150 ${
+                    isAnimated
+                      ? "border-terracotta text-terracotta"
+                      : "border-parchment-border group-hover:border-ink"
+                  }`}
+                >
+                  {isAnimated ? "live" : "static"}
                 </span>
               </button>
 

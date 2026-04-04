@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```
 folio/
 ├── web/        # Next.js application (primary codebase)
-└── docs/       # Design documentation (DESIGN.md, progress/, overview/)
+└── docs/       # Design documentation (DESIGN.md, overview/)
 ```
 
 All development work happens in `web/`.
@@ -45,10 +45,10 @@ This project uses Next.js 16.2.2 — **breaking changes exist from prior version
 - `components/` — Shared UI components. `components/ui/` holds shadcn primitives.
 - `components/ui/badge.tsx` — `Badge` component with variants: `available`, `soon`, `default`, `verified`, `error`. Use for all status labels across the app.
 - `components/CodeHighlight.tsx` — Shiki-powered syntax highlighter. Wraps `codeToHtml` with `github-light-default` theme. Use this for any code/token output inside tools.
-- `components/GridBackground.tsx` — Fixed full-viewport grid overlay (z-[-1], pointer-events-none). Already rendered in `RootLayout`; do not add another instance.
+- `components/GridBackground.tsx` — Canvas-based animated tile background (z-[-1], pointer-events-none). Already rendered in `RootLayout`; do not add another instance. Reads `isAnimated` from `LayoutContext`.
 - `context/LayoutContext.tsx` — Global layout state, persisted to localStorage.
 - `data/` — JSON content files. All hardcoded page data lives here, not in components.
-  - `data/home.json` — `status`, `sections[]`, `connect[]` for the landing page.
+  - `data/home.json` — `status`, `sections[]` (with `en`, `tags`, `status` fields), `connect[]` for the landing page.
   - `data/tools.json` — `tools[]` for the tools directory.
   - Each item has an `enabled` boolean — set `false` to hide without deleting.
 - `lib/utils.ts` — `cn()` helper (clsx + tailwind-merge).
@@ -60,8 +60,9 @@ The site targets Vietnamese users. All UI copy, tool descriptions, and in-app me
 
 `LayoutContext` exposes:
 - `maxWidthClass` / `transitionClass` — container width + animation class, consumed by every page and Navigation
-- `isWide` / `toggleWide` — switches max-width between `1080px` (standard) and `2560px` (wide)
+- `isWide` / `toggleWide` — switches max-width between `1080px` (standard) and `1600px` (wide)
 - `isCustomCursor` / `toggleCustomCursor` — toggles the custom cursor on/off
+- `isAnimated` / `toggleAnimated` — toggles the canvas background animation on/off
 
 Pages must wrap content with:
 ```tsx
@@ -69,13 +70,14 @@ const { maxWidthClass, transitionClass } = useLayout();
 <section className={`${maxWidthClass} ${transitionClass} mx-auto`}>
 ```
 
-Both toggles are persisted to localStorage (`folio-wide-mode`, `folio-custom-cursor`) and survive page refresh.
+All three toggles are persisted to localStorage (`folio-wide-mode`, `folio-custom-cursor`, `folio-bg-animation`) and survive page refresh.
 
 ### Navigation
 
-The `//` button (top-right) opens a `// preferences` panel with:
+The `//` button (top-right) opens a `// preferences` panel (`top-[calc(100%+22px)]`) with:
 - **layout** — standard / wide toggle
 - **cursor** — custom / default toggle
+- **background** — live / static toggle
 
 All interactive elements (`<button>`, `<Link>`) must have `cursor-pointer` class so the system pointer shows correctly when custom cursor is off.
 
@@ -85,6 +87,14 @@ All interactive elements (`<button>`, `<Link>`) must have `cursor-pointer` class
 
 When custom cursor is disabled, `cursor-pointer` on interactive elements restores the default browser pointer.
 
+### Background
+
+`GridBackground` renders a canvas with 88px parchment tiles on a near-parchment sub-surface (`rgb(244,240,235)`), with 1.5px grout gaps. When the cursor moves, a terracotta radial glow appears on the sub-surface and shows through the gaps. Controlled by `isAnimated` from `LayoutContext`; static mode draws the tile grid without animation.
+
+### Scrollbar
+
+Custom styled in `globals.css`: 6px width, `ghost-ink/50` thumb, darkens on hover. `::-webkit-scrollbar-*` pseudo-elements also set `cursor: none` when custom cursor is active.
+
 ### Sections
 
 | Route | Status | Notes |
@@ -92,6 +102,7 @@ When custom cursor is disabled, `cursor-pointer` on interactive elements restore
 | `/` | Done | Landing page |
 | `/tools` | Done | Tool directory — 2-col grid |
 | `/tools/jwt-decoder-encoder` | Done | JWT decode / encode / verify — tab UI, HS256/384/512 |
+| `/tools/json-formatter` | Done | Format/beautify, compare 2 JSONs, tree view |
 | `/showcase` | Planned | — |
 | `/lab` | Planned | — |
 | `/blog` | Planned | — |
@@ -105,7 +116,7 @@ Full spec in `docs/DESIGN.md`. Critical rules:
 - `parchment` (#FBF8F4) — primary bg
 - `ink` (#2C2420) — primary text, structural borders
 - `faded-ink` (#6B5A4E) — secondary/supporting text
-- `ghost-ink` (#B8A898) — metadata, timestamps, muted labels
+- `ghost-ink` (#9A8878) — metadata, timestamps, muted labels *(updated from #B8A898)*
 - `terracotta` (#C4622D) — **the only accent** (hover, overline, active state)
 - `terracotta-pale` (#F2E0D4) — accent surfaces
 - `parchment-border` (#E4D8CC) — content dividers
@@ -117,6 +128,8 @@ Full spec in `docs/DESIGN.md`. Critical rules:
 - All nav items, labels, overlines: **lowercase**
 - Overline convention: `{"// section-name"}` prefix, `text-[11px] font-medium tracking-[0.15em] text-terracotta lowercase`
 - `//` is a JSX text pattern — always wrap in `{"// ..."}` to avoid Biome's `noCommentText` lint error
+
+**Font weight note:** Body default is `font-light` (300). Any descriptive/body text that needs to be clearly readable must explicitly set `font-normal` (400). `font-light` is appropriate only for labels, nav, and metadata.
 
 **Borders:**
 - Structural: `border-2 border-ink` — nav bottom, major section breaks. **Globally renders as dashed** via `.border-ink` rule in `globals.css` (`border-style: dashed; border-color: rgb(44 36 32 / 0.28)`).
@@ -150,7 +163,7 @@ className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transitio
   {"// tools · tool-name"}
 </div>
 <h1 className="font-display text-[44px] leading-tight mb-4">Tool Name</h1>
-<p className="text-sm text-faded-ink border-l-2 border-terracotta pl-4 max-w-xl">
+<p className="text-[15px] text-ink font-normal italic border-l-2 border-terracotta pl-4 max-w-xl">
   Tool description.
 </p>
 ```

@@ -10,6 +10,8 @@ interface LayoutContextType {
   transitionClass: string; // Thêm class dùng chung cho animation
   isCustomCursor: boolean;
   toggleCustomCursor: () => void;
+  isAnimated: boolean;
+  toggleAnimated: () => void;
 }
 
 const LayoutContext = createContext<LayoutContextType | undefined>(undefined);
@@ -17,6 +19,7 @@ const LayoutContext = createContext<LayoutContextType | undefined>(undefined);
 export function LayoutProvider({ children }: { children: React.ReactNode }) {
   const [isWide, setIsWide] = useState(false);
   const [isCustomCursor, setIsCustomCursor] = useState(true);
+  const [isAnimated, setIsAnimated] = useState(true);
 
   useEffect(() => {
     const saved = localStorage.getItem("folio-wide-mode");
@@ -30,6 +33,9 @@ export function LayoutProvider({ children }: { children: React.ReactNode }) {
       "custom-cursor-active",
       cursorEnabled,
     );
+
+    const savedAnim = localStorage.getItem("folio-bg-animation");
+    if (savedAnim === "false") setIsAnimated(false);
   }, []);
 
   const toggleWide = () => {
@@ -46,6 +52,12 @@ export function LayoutProvider({ children }: { children: React.ReactNode }) {
       "custom-cursor-active",
       nextValue,
     );
+  };
+
+  const toggleAnimated = () => {
+    const nextValue = !isAnimated;
+    setIsAnimated(nextValue);
+    localStorage.setItem("folio-bg-animation", String(nextValue));
   };
 
   // Wide: 1600px ≈ tỷ lệ vàng so với 2560px (62.5%), ≈ √2 × standard (1080px)
@@ -66,6 +78,8 @@ export function LayoutProvider({ children }: { children: React.ReactNode }) {
         transitionClass,
         isCustomCursor,
         toggleCustomCursor,
+        isAnimated,
+        toggleAnimated,
       }}
     >
       {children}

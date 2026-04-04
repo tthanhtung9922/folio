@@ -59,7 +59,7 @@ export default function ToolsPage() {
               </div>
 
               {/* Description */}
-              <p className="border-l-2 border-terracotta pl-4 text-sm text-faded-ink leading-relaxed pb-1">
+              <p className="border-l-2 border-terracotta pl-4 text-[15px] text-ink font-normal italic leading-relaxed pb-1">
                 Công cụ dev nhỏ, chạy hoàn toàn trên trình duyệt. Không cần đăng
                 nhập, không gửi dữ liệu về server.
               </p>
@@ -117,7 +117,7 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
       </h2>
 
       {/* Description */}
-      <p className="text-sm text-faded-ink leading-relaxed flex-1">
+      <p className="text-sm text-ink font-normal leading-relaxed flex-1">
         {tool.desc}
       </p>
 

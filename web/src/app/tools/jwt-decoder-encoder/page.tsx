@@ -148,7 +148,7 @@ export default function JwtDecoderEncoder() {
         <h1 className="text-[44px] font-display leading-tight mb-4">
           JWT Decoder · Encoder
         </h1>
-        <p className="text-sm text-faded-ink border-l-2 border-terracotta pl-4 max-w-xl">
+        <p className="text-[15px] text-ink font-normal italic border-l-2 border-terracotta pl-4 max-w-xl">
           Giải mã, xác thực và mã hóa JSON Web Token ngay trên trình duyệt.
           Không gửi dữ liệu về máy chủ.
         </p>

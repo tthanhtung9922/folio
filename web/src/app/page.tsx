@@ -79,7 +79,7 @@ export default function Home() {
                 </h1>
 
                 <p
-                  className="animate-fade-up border-l-2 border-terracotta pl-4 text-sm text-faded-ink leading-relaxed max-w-96"
+                  className="animate-fade-up border-l-2 border-terracotta pl-4 text-[15px] text-ink font-normal italic leading-relaxed max-w-96"
                   style={{ animationDelay: "160ms" }}
                 >
                   Một hệ sinh thái sống nơi mọi khía cạnh của hành trình phát
@@ -112,7 +112,7 @@ export default function Home() {
                       </span>
                     )}
                   </p>
-                  <p className="text-sm text-faded-ink mt-2 leading-relaxed">
+                  <p className="text-[15px] text-ink font-normal italic mt-2 leading-relaxed">
                     {status.description}
                   </p>
                 </div>
@@ -173,18 +173,55 @@ export default function Home() {
             <Link
               key={item.index}
               href={item.href}
-              className="group flex items-center gap-6 md:gap-10 py-7 hover:bg-warm-canvas/50 transition-colors duration-200 border-t border-dashed border-ghost-ink/40"
+              className="group flex items-start gap-6 md:gap-10 py-8 hover:bg-warm-canvas/50 transition-colors duration-200 border-t border-dashed border-ghost-ink/40"
             >
-              <span className="hidden md:block w-10 shrink-0 text-[11px] tracking-widest text-ghost-ink font-mono pt-1">
+              {/* Index */}
+              <span className="hidden md:block w-10 shrink-0 text-[11px] tracking-widest text-ghost-ink font-mono pt-2">
                 {item.index}
               </span>
-              <h2 className="w-1/3 md:w-1/4 shrink-0 text-[28px] md:text-[34px] font-display leading-tight group-hover:text-terracotta transition-colors duration-200">
+
+              {/* Title */}
+              <h2 className="w-1/3 md:w-1/4 shrink-0 text-[28px] md:text-[34px] font-display leading-tight group-hover:text-terracotta transition-colors duration-200 pt-1">
                 {item.title}
               </h2>
-              <p className="hidden md:block flex-1 text-sm text-faded-ink leading-relaxed">
-                {item.desc}
-              </p>
-              <span className="ml-auto text-terracotta opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200 font-mono text-lg">
+
+              {/* Rich description */}
+              <div className="hidden md:flex flex-col flex-1 gap-2.5 pt-1">
+                {/* Top row: en label + status badge — always on same line */}
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] uppercase tracking-[0.18em] text-ghost-ink">
+                    {item.en}
+                  </span>
+                  <span
+                    className={`text-[10px] uppercase tracking-widest border px-1.5 py-0.5 rounded-xs shrink-0 ${
+                      item.status === "live"
+                        ? "border-terracotta text-terracotta"
+                        : "border-parchment-border text-ghost-ink"
+                    }`}
+                  >
+                    {item.status}
+                  </span>
+                </div>
+                {/* Description */}
+                <p className="text-[15px] text-ink font-normal leading-relaxed">
+                  {item.desc}
+                </p>
+                {/* Tags */}
+                <div className="flex gap-3 flex-wrap">
+                  {item.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-[10px] tracking-widest text-ghost-ink"
+                    >
+                      {"// "}
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Arrow */}
+              <span className="ml-auto text-terracotta opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200 font-mono text-lg pt-1">
                 →
               </span>
             </Link>
