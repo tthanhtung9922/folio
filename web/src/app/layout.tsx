@@ -32,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" className={`${playfair.variable} ${montserrat.variable}`}>
+    <html lang="vi" className={`${playfair.variable} ${montserrat.variable}`} suppressHydrationWarning>
       <body className="antialiased font-mono font-light">
         {/* biome-ignore lint/security/noDangerouslySetInnerHtml: flash prevention script with static content */}
         <script
