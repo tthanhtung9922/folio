@@ -169,8 +169,9 @@ volumes:
   postgres_dev_data:
 ```
 
-- [ ] Khởi tạo `api/` — `Folio.slnx` với 4 projects
-- [ ] DDD + Clean Architecture skeleton
+- [x] Khởi tạo `api/` — `Folio.slnx` với 4 projects (`Folio.Api`, `Folio.Application`, `Folio.Domain`, `Folio.Infrastructure`), project references đúng dependency graph, `global.json`, `.gitignore`
+- [x] Cài NuGet packages — `Npgsql.EntityFrameworkCore.PostgreSQL 10.0.1`, `Microsoft.EntityFrameworkCore.Design 10.0.5`, `dotnet-ef 10.0.5` global tool
+- [ ] DDD + Clean Architecture skeleton — `AppDbContext`, `IAppDbContext`, DI registration
 - [ ] EF Core 10 + PostgreSQL + migration đầu tiên
 - [ ] Health check endpoint (`GET /health`)
 - [ ] `api/Dockerfile` multi-stage

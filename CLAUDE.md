@@ -43,6 +43,15 @@ Ví dụ không đạt:
 
 > "Tạo file `AppDbContext.cs` trong project."
 
+### Bắt buộc đọc context trước khi hướng dẫn backend
+
+Trước khi viết hoặc cập nhật bất kỳ hướng dẫn backend nào, Claude **PHẢI** đọc:
+
+1. **Toàn bộ docs hướng dẫn backend hiện có** trong `docs/backend/` — để biết đã hướng dẫn đến đâu, tránh mâu thuẫn hoặc lặp lại
+2. **Source code backend hiện tại** trong `api/` — đọc cấu trúc thư mục, xem những file nào đã tồn tại, packages nào đã cài, để hướng dẫn đúng với trạng thái thực tế của project
+
+Chỉ sau khi nắm đủ context mới được bắt đầu viết hướng dẫn mới.
+
 ### Bắt buộc research web trước khi hướng dẫn backend
 
 Trước khi viết hoặc cập nhật bất kỳ hướng dẫn backend nào, Claude **PHẢI** dùng `WebSearch` để tìm thông tin mới nhất. Không được dựa vào training data vì .NET / EF Core / ASP.NET Core thay đổi nhanh và có nhiều breaking changes giữa các phiên bản.
