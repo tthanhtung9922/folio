@@ -188,9 +188,11 @@ export default function JwtDecoderEncoder() {
         <div className="grid grid-cols-1 md:grid-cols-[1fr_1.2fr] gap-12 items-start">
           {/* Left: token input */}
           <div className="flex flex-col gap-3">
-            <span className="text-[11px] font-medium tracking-[0.15em] lowercase text-terracotta">
-              {"// encoded token"}
-            </span>
+            <div className="h-8 flex items-center">
+              <span className="text-[11px] font-medium tracking-[0.15em] lowercase text-terracotta">
+                {"// encoded token"}
+              </span>
+            </div>
             <div className="relative w-full border-[0.5px] border-parchment-border rounded-xs bg-warm-canvas/30 focus-within:border-terracotta focus-within:ring-1 focus-within:ring-terracotta transition-all">
               <div className="p-4 font-mono text-[14px] leading-relaxed break-all whitespace-pre-wrap pointer-events-none min-h-100">
                 <span className="text-terracotta">{tokenParts[0]}</span>
@@ -218,10 +220,12 @@ export default function JwtDecoderEncoder() {
 
           {/* Right: decoded parts */}
           <div className="flex flex-col gap-6">
-            <div className="flex flex-col gap-2">
-              <span className="text-[11px] font-medium tracking-[0.15em] lowercase text-terracotta">
-                {"// header"}
-              </span>
+            <div className="flex flex-col gap-3">
+              <div className="h-8 flex items-center">
+                <span className="text-[11px] font-medium tracking-[0.15em] lowercase text-terracotta">
+                  {"// header"}
+                </span>
+              </div>
               <CodeHighlight code={headerStr} lang="json" />
             </div>
 
@@ -361,7 +365,7 @@ export default function JwtDecoderEncoder() {
 
           {/* Right: generated token */}
           <div className="flex flex-col gap-4">
-            <div className="flex justify-between items-center">
+            <div className="h-8 flex justify-between items-center">
               <span className="text-[11px] font-medium tracking-[0.15em] lowercase text-terracotta">
                 {"// generated token"}
               </span>

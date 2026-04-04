@@ -334,7 +334,7 @@ export default function JsonFormatter() {
 
   const sharedTextarea = (
     <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-between">
+      <div className="h-8 flex items-center justify-between">
         <span className="text-[11px] font-medium tracking-[0.15em] lowercase text-terracotta">
           {"// input"}
         </span>
@@ -436,7 +436,7 @@ export default function JsonFormatter() {
 
           {/* Right: output */}
           <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between">
+            <div className="h-8 flex items-center justify-between">
               <span className="text-[11px] font-medium tracking-[0.15em] lowercase text-terracotta">
                 {"// output"}
               </span>
@@ -503,7 +503,7 @@ export default function JsonFormatter() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
             {/* JSON A */}
             <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-between">
+              <div className="h-8 flex items-center justify-between">
                 <span className="text-[11px] font-medium tracking-[0.15em] lowercase text-terracotta">
                   {"// json a"}
                 </span>
@@ -533,7 +533,7 @@ export default function JsonFormatter() {
 
             {/* JSON B */}
             <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-between">
+              <div className="h-8 flex items-center justify-between">
                 <span className="text-[11px] font-medium tracking-[0.15em] lowercase text-[#8C6B77]">
                   {"// json b"}
                 </span>
@@ -680,9 +680,11 @@ export default function JsonFormatter() {
 
           {/* Right: tree */}
           <div className="flex flex-col gap-3">
-            <span className="text-[11px] font-medium tracking-[0.15em] lowercase text-terracotta">
-              {"// structure"}
-            </span>
+            <div className="h-8 flex items-center">
+              <span className="text-[11px] font-medium tracking-[0.15em] lowercase text-terracotta">
+                {"// structure"}
+              </span>
+            </div>
             {parsed !== null ? (
               <div className="p-5 bg-warm-canvas/20 border-[0.5px] border-parchment-border rounded-xs min-h-[420px] overflow-auto">
                 <TreeNode data={parsed} depth={0} />
