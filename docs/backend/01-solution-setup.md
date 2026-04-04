@@ -96,7 +96,9 @@ Output kỳ vọng:
 The template "Solution File" was created successfully.
 ```
 
-Lúc này có file `api/Folio.sln`.
+Lúc này có file `api/Folio.slnx`.
+
+> **Lưu ý `.slnx`:** Từ .NET 10 SDK, `dotnet new sln` mặc định tạo file `.slnx` (XML-based) thay vì `.sln` cũ. Format mới này gọn hơn, ít conflict khi merge Git hơn, và được hỗ trợ đầy đủ bởi VS 2026 và dotnet CLI. Nếu vì lý do nào đó cần format cũ: thêm flag `--format sln`.
 
 ---
 
@@ -150,10 +152,10 @@ rm src/Folio.Infrastructure/Class1.cs
 Vẫn đang ở `api/`:
 
 ```bash
-dotnet sln Folio.sln add src/Folio.Api/Folio.Api.csproj
-dotnet sln Folio.sln add src/Folio.Application/Folio.Application.csproj
-dotnet sln Folio.sln add src/Folio.Domain/Folio.Domain.csproj
-dotnet sln Folio.sln add src/Folio.Infrastructure/Folio.Infrastructure.csproj
+dotnet sln Folio.slnx add src/Folio.Api/Folio.Api.csproj
+dotnet sln Folio.slnx add src/Folio.Application/Folio.Application.csproj
+dotnet sln Folio.slnx add src/Folio.Domain/Folio.Domain.csproj
+dotnet sln Folio.slnx add src/Folio.Infrastructure/Folio.Infrastructure.csproj
 ```
 
 Output mỗi lệnh:
@@ -206,10 +208,10 @@ Reference `..\Folio.Domain\Folio.Domain.csproj` added to the project.
 Trong Terminal (vẫn ở `api/`):
 
 ```bash
-start Folio.sln
+start Folio.slnx
 ```
 
-Visual Studio sẽ mở tự động. Nếu máy cài nhiều phiên bản Visual Studio và file mở sai version: đóng lại, mở **Visual Studio 2026** trực tiếp từ Start Menu → menu **File** → **Open** → **Project/Solution** → chọn file `api/Folio.sln`.
+Visual Studio sẽ mở tự động. Nếu máy cài nhiều phiên bản Visual Studio và file mở sai version: đóng lại, mở **Visual Studio 2026** trực tiếp từ Start Menu → menu **File** → **Open** → **Project/Solution** → chọn file `api/Folio.slnx`.
 
 Nếu không thấy **Solution Explorer** sau khi mở:
 - Menu **View** → **Solution Explorer**
@@ -235,7 +237,7 @@ Solution 'Folio' (4 projects)
 Trong Terminal, từ thư mục `api/`:
 
 ```bash
-dotnet build Folio.sln
+dotnet build Folio.slnx
 ```
 
 Output kỳ vọng:
@@ -259,7 +261,7 @@ folio/
 └── api/
     ├── .gitignore
     ├── global.json
-    ├── Folio.sln
+    ├── Folio.slnx
     └── src/
         ├── Folio.Api/
         │   ├── Controllers/        ← trống (đã xóa WeatherForecastController)
