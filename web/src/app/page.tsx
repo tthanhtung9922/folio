@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { Mail } from "lucide-react";
+import Link from "next/link";
 import { useLayout } from "@/context/LayoutContext";
 import homeData from "@/data/home.json";
 
@@ -136,6 +136,7 @@ export default function Home() {
                       <li key={link.name}>
                         <a
                           href={link.href}
+                          target="_blank"
                           className="group flex items-center justify-between py-3 text-sm text-ink hover:text-terracotta transition-colors duration-150 cursor-pointer"
                         >
                           <span className="flex items-center gap-2.5 lowercase tracking-[0.08em]">

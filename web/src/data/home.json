@@ -42,8 +42,18 @@
     }
   ],
   "connect": [
-    { "name": "github", "href": "#", "icon": "github", "enabled": true },
-    { "name": "linkedin", "href": "#", "icon": "linkedin", "enabled": true },
+    {
+      "name": "github",
+      "href": "https://github.com/tthanhtung9922",
+      "icon": "github",
+      "enabled": true
+    },
+    {
+      "name": "linkedin",
+      "href": "https://www.linkedin.com/in/tthanhtung92-work/",
+      "icon": "linkedin",
+      "enabled": true
+    },
     { "name": "email", "href": "#", "icon": "email", "enabled": true }
   ]
 }

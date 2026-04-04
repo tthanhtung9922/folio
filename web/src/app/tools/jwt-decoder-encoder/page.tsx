@@ -1,8 +1,8 @@
 "use client";
 
 import * as jose from "jose";
-import { useEffect, useState } from "react";
 import { Check, Copy, KeyRound, ScanSearch } from "lucide-react";
+import { useEffect, useState } from "react";
 import { CodeHighlight } from "@/components/CodeHighlight";
 import { Badge } from "@/components/ui/badge";
 import { useLayout } from "@/context/LayoutContext";
@@ -57,10 +57,7 @@ export default function JwtDecoderEncoder() {
       const parsedPayload = jose.decodeJwt(newToken);
       setHeaderStr(JSON.stringify(parsedHeader, null, 2));
       setPayloadStr(JSON.stringify(parsedPayload, null, 2));
-      if (
-        parsedHeader.alg &&
-        ALG_OPTIONS.includes(parsedHeader.alg as Alg)
-      ) {
+      if (parsedHeader.alg && ALG_OPTIONS.includes(parsedHeader.alg as Alg)) {
         setAlg(parsedHeader.alg as Alg);
       }
       if (secret) {

@@ -17,10 +17,10 @@
   },
   {
     "name": "JSON Formatter",
-    "desc": "Format, validate và minify JSON. Highlight lỗi cú pháp inline.",
+    "desc": "Format, validate, so sánh và xem cấu trúc JSON. Hỗ trợ tự sửa lỗi cú pháp.",
     "category": "format",
-    "href": "",
-    "available": false,
+    "href": "/tools/json-formatter",
+    "available": true,
     "enabled": true
   },
   {

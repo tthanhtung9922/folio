@@ -9,20 +9,15 @@ const badgeVariants = cva(
     variants: {
       variant: {
         // Terracotta accent — available, active, live
-        available:
-          "bg-terracotta/8 border-terracotta text-terracotta",
+        available: "bg-terracotta/8 border-terracotta text-terracotta",
         // Muted — coming soon, disabled, draft
-        soon:
-          "border-ghost-ink/50 text-ghost-ink",
+        soon: "border-ghost-ink/50 text-ghost-ink",
         // Verified / success state
-        verified:
-          "bg-terracotta/8 border-terracotta text-terracotta",
+        verified: "bg-terracotta/8 border-terracotta text-terracotta",
         // Error / invalid state
-        error:
-          "bg-terracotta-pale border-terracotta text-terracotta",
+        error: "bg-terracotta-pale border-terracotta text-terracotta",
         // Neutral — informational, no strong state
-        default:
-          "border-parchment-border text-faded-ink",
+        default: "border-parchment-border text-faded-ink",
       },
     },
     defaultVariants: {
@@ -37,10 +32,7 @@ function Badge({
   ...props
 }: React.ComponentProps<"span"> & VariantProps<typeof badgeVariants>) {
   return (
-    <span
-      className={cn(badgeVariants({ variant, className }))}
-      {...props}
-    />
+    <span className={cn(badgeVariants({ variant, className }))} {...props} />
   );
 }
 

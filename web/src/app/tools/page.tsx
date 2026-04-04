@@ -60,8 +60,8 @@ export default function ToolsPage() {
 
               {/* Description */}
               <p className="border-l-2 border-terracotta pl-4 text-sm text-faded-ink leading-relaxed pb-1">
-                Công cụ dev nhỏ, chạy hoàn toàn trên trình duyệt. Không cần
-                đăng nhập, không gửi dữ liệu về server.
+                Công cụ dev nhỏ, chạy hoàn toàn trên trình duyệt. Không cần đăng
+                nhập, không gửi dữ liệu về server.
               </p>
             </div>
           </div>
