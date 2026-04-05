@@ -91,6 +91,7 @@ docker run -p 3000:3000 folio-web
 
 > **Điều kiện:** POC đã ổn định trên local. Không rush.
 > **Target:** 1–2 ngày khi sẵn sàng
+> **Trạng thái:** ⏸ Tạm hoãn — chưa mua tên miền, chưa thuê VPS. Chuyển sang Đợt 2.
 
 - [x] Viết `web/Dockerfile` đầy đủ (multi-stage, standalone output)
 - [x] Viết `infra/docker-compose.poc.yml` — chỉ một service `web` (+ `docker-compose.local.yml` để test local)
@@ -168,9 +169,10 @@ volumes:
   postgres_dev_data:
 ```
 
-- [ ] Khởi tạo `api/` — `Folio.slnx` với 4 projects
-- [ ] DDD + Clean Architecture skeleton
-- [ ] EF Core 10 + PostgreSQL + migration đầu tiên
+- [x] Khởi tạo `api/` — `Folio.slnx` với 4 projects (`Folio.Api`, `Folio.Application`, `Folio.Domain`, `Folio.Infrastructure`), project references đúng dependency graph, `global.json`, `.gitignore`
+- [x] Cài NuGet packages — `Npgsql.EntityFrameworkCore.PostgreSQL 10.0.1`, `Microsoft.EntityFrameworkCore.Design 10.0.5`, `dotnet-ef 10.0.5` global tool
+- [x] DDD + Clean Architecture skeleton — `AppDbContext`, `IAppDbContext`, `DependencyInjection`, `.env` config
+- [ ] EF Core 10 + PostgreSQL local (Docker Compose) + migration đầu tiên ← đang ở đây
 - [ ] Health check endpoint (`GET /health`)
 - [ ] `api/Dockerfile` multi-stage
 - [ ] Unit tests + Integration tests với Testcontainers (CI dùng real PostgreSQL)

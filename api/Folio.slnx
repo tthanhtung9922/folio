@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Folio.Api/Folio.Api.csproj" />
+    <Project Path="src/Folio.Application/Folio.Application.csproj" />
+    <Project Path="src/Folio.Domain/Folio.Domain.csproj" />
+    <Project Path="src/Folio.Infrastructure/Folio.Infrastructure.csproj" />
+  </Folder>
+</Solution>

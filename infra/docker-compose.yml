@@ -1,0 +1,54 @@
+# Đứng ở folder root (folio) và chạy những command dưới:
+
+# Môi trường dev
+# -----------------------------------------------------------------------------------------------
+# Khởi động:             docker compose -f infra/docker-compose.yml --env-file .env.dev up -d --build
+# Khởi động không build: docker compose -f infra/docker-compose.yml --env-file .env.dev up -d
+
+# Dừng:      docker compose -f infra/docker-compose.yml --env-file .env.dev down
+# Xóa data:  docker compose -f infra/docker-compose.yml --env-file .env.dev down -v
+
+# Môi trường prod
+# -----------------------------------------------------------------------------------------------
+# Khởi động:             docker compose -f infra/docker-compose.yml --env-file .env up -d --build
+# Khởi động không build: docker compose -f infra/docker-compose.yml --env-file .env up -d
+
+# Dừng:      docker compose -f infra/docker-compose.yml --env-file .env down
+# Xóa data:  docker compose -f infra/docker-compose.yml --env-file .env down -v
+
+name: ${PROJECT_NAME}
+
+services:
+  db:
+    build:
+      context: .
+      dockerfile: ../infra/Dockerfile.database
+    image: ${PROJECT_NAME}-postgres:${ENV}
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+  web:
+    build:
+      context: ../web
+      dockerfile: ../infra/Dockerfile.web
+    image: ${PROJECT_NAME}-web:${ENV}
+    ports:
+      - "${WEB_PORT}:${WEB_PORT}"
+    environment:
+      NODE_ENV: production
+
+volumes:
+  postgres_data:
+    name: ${PROJECT_NAME}_postgres_${ENV}_data

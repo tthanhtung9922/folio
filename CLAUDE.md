@@ -12,6 +12,69 @@ folio/
 
 All development work happens in `web/`.
 
+## Hard Rules
+
+### Backend code — TUYỆT ĐỐI KHÔNG TỰ CODE
+
+Claude **KHÔNG ĐƯỢC** tự viết, scaffold, hoặc generate bất kỳ backend code nào (C#, ASP.NET, EF Core, migration, Dockerfile cho `api/`, v.v.).
+
+Với mọi việc liên quan đến backend (`api/`, database, auth, v.v.):
+
+- **Chỉ được hướng dẫn** — giải thích approach, đưa ra ví dụ tham khảo, chỉ ra bước cần làm
+- **Không được tạo file**, không được edit file trong `api/`
+- User sẽ tự viết toàn bộ backend code
+
+### Tiêu chuẩn hướng dẫn backend
+
+Hướng dẫn phải đủ chi tiết để một junior developer có thể làm theo mà không cần hỏi thêm. Cụ thể:
+
+- **CLI:** Ghi đầy đủ lệnh, chạy từ thư mục nào, output kỳ vọng trông như thế nào
+- **IDE (Visual Studio 2026):** Mô tả thao tác chuột — mở menu nào, click vào đâu, dialog nào hiện ra, điền gì vào field nào
+- **PgAdmin:** Mô tả từng bước trong UI — expand tree nào, right-click object nào, chạy query ở đâu
+- **Docker Desktop:** Chỉ rõ tab nào (Containers / Images / Volumes), nút nào cần bấm, trạng thái cần kiểm tra
+- **Terminal (Windows Terminal / PowerShell):** Ghi rõ chạy ở đâu (thư mục gốc repo, `api/`, v.v.), dùng shell nào nếu quan trọng
+- **Và một số tool khác nếu có**
+
+Ví dụ đúng chuẩn:
+
+> "Trong Visual Studio, click chuột phải vào project `Folio.Api` trong Solution Explorer → chọn **Add > New Item** → tìm **Class** → đặt tên `AppDbContext.cs` → click **Add**."
+
+Ví dụ không đạt:
+
+> "Tạo file `AppDbContext.cs` trong project."
+
+### Bắt buộc đọc context trước khi hướng dẫn backend
+
+Trước khi viết hoặc cập nhật bất kỳ hướng dẫn backend nào, Claude **PHẢI** đọc:
+
+1. **Toàn bộ docs hướng dẫn backend hiện có** trong `docs/backend/` — để biết đã hướng dẫn đến đâu, tránh mâu thuẫn hoặc lặp lại
+2. **Source code backend hiện tại** trong `api/` — đọc cấu trúc thư mục, xem những file nào đã tồn tại, packages nào đã cài, để hướng dẫn đúng với trạng thái thực tế của project
+3. **Thư mục `infra/`** — đọc các file docker-compose hiện có để tránh tạo trùng, hiểu naming convention, đảm bảo hướng dẫn infrastructure đồng bộ
+4. **Thư mục `web/`** — nắm cấu trúc frontend để hướng dẫn backend không mâu thuẫn với cách web gọi API (ports, endpoints, CORS, v.v.)
+
+Chỉ sau khi nắm đủ context mới được bắt đầu viết hướng dẫn mới.
+
+### Bắt buộc đồng bộ tất cả documents khi có thay đổi
+
+Khi cập nhật hoặc thêm mới bất kỳ thông tin nào (package mới, approach mới, thay đổi cấu trúc...), Claude **PHẢI** kiểm tra toàn bộ `docs/backend/` để tìm các chỗ liên quan và cập nhật đồng bộ. Không được để các doc mâu thuẫn nhau.
+
+Ví dụ: thêm package `DotNetEnv` vào bước 3 → phải cập nhật bảng packages ở bước 2, cập nhật link "Tiếp theo" nếu sai tên file, v.v.
+
+### Bắt buộc research web trước khi hướng dẫn backend
+
+Trước khi viết hoặc cập nhật bất kỳ hướng dẫn backend nào, Claude **PHẢI** dùng `WebSearch` để tìm thông tin mới nhất. Không được dựa vào training data vì .NET / EF Core / ASP.NET Core thay đổi nhanh và có nhiều breaking changes giữa các phiên bản.
+
+Checklist bắt buộc trước khi viết hướng dẫn:
+
+- **CLI commands:** Search `dotnet new <template> .NET 10 options 2026` — flags hay thay đổi giữa các version (ví dụ: `--use-controllers`, `--format sln` vs `.slnx`)
+- **NuGet packages:** Search tên package + `latest version 2026` — version number thay đổi, API có thể khác
+- **Breaking changes:** Search `<technology> breaking changes .NET 10` — đặc biệt quan trọng khi upgrade major version
+- **Default behaviors:** Search `<command> default .NET 10` — defaults hay bị đảo ngược giữa versions (ví dụ: `dotnet new sln` mặc định `.slnx` từ .NET 10)
+
+Sau khi research xong mới được viết hướng dẫn. Nếu tìm thấy thông tin mâu thuẫn giữa các nguồn, ưu tiên: **learn.microsoft.com** > **devblogs.microsoft.com** > các nguồn khác.
+
+Frontend (`web/`) hoạt động bình thường — không bị ảnh hưởng bởi rule này.
+
 ## Commands (run from `web/`)
 
 ```bash
@@ -40,9 +103,11 @@ This project uses Next.js 16.2.2 — **breaking changes exist from prior version
 ## Architecture
 
 ### Path aliases
+
 `@/` maps to `web/src/`.
 
 ### App structure (`web/src/`)
+
 - `app/` — Next.js App Router pages. Tools live at `app/tools/<tool-name>/page.tsx`.
 - `app/icon.svg` — Custom favicon (replaces default Next.js favicon). SVG with ink background + terracotta dot.
 - `components/` — Shared UI components. `components/ui/` holds shadcn primitives.
@@ -59,6 +124,7 @@ This project uses Next.js 16.2.2 — **breaking changes exist from prior version
 - `lib/utils.ts` — `cn()` helper (clsx + tailwind-merge).
 
 ### Language
+
 The site is bilingual (Vietnamese / English). Default locale is Vietnamese. A language toggle in the preferences panel switches to English and persists to `localStorage("folio-locale")`.
 
 - All UI strings are defined in `i18n/vi.ts` and `i18n/en.ts` as flat key-value maps.
@@ -70,6 +136,7 @@ The site is bilingual (Vietnamese / English). Default locale is Vietnamese. A la
 ### Layout system
 
 `LayoutContext` exposes:
+
 - `maxWidthClass` / `transitionClass` — container width + animation class, consumed by every page and Navigation
 - `isWide` / `toggleWide` — switches max-width between `1080px` (standard) and `1600px` (wide)
 - `isCustomCursor` / `toggleCustomCursor` — toggles the custom cursor on/off
@@ -77,6 +144,7 @@ The site is bilingual (Vietnamese / English). Default locale is Vietnamese. A la
 - `isDarkMode` / `toggleDarkMode` — toggles dark mode; adds/removes `.dark` class on `document.documentElement`; persisted to `localStorage("folio-dark-mode")`
 
 Pages must wrap content with:
+
 ```tsx
 const { maxWidthClass, transitionClass } = useLayout();
 <section className={`${maxWidthClass} ${transitionClass} mx-auto`}>
@@ -87,6 +155,7 @@ All four toggles are persisted to localStorage and survive page refresh.
 ### Navigation
 
 The `//` button (top-right) opens a `// preferences` panel (`top-[calc(100%+22px)]`) with:
+
 - **layout** — standard / wide toggle
 - **cursor** — custom / default toggle
 - **background** — live / static toggle
@@ -111,18 +180,18 @@ Custom styled in `globals.css`: 6px width, `ghost-ink/50` thumb, darkens on hove
 
 ### Sections
 
-| Route | Status | Notes |
-|---|---|---|
-| `/` | Done | Landing page |
-| `/tools` | Done | Tool directory — 2-col grid |
-| `/tools/jwt-decoder-encoder` | Done | JWT decode / encode / verify — tab UI, HS256/384/512 |
-| `/tools/json-formatter` | Done | Format/beautify, compare 2 JSONs, tree view |
-| `/tools/text-compare` | Done | Line-by-line text diff — inline and side-by-side modes |
-| `/tools/base64-codec` | Done | Encode/decode Base64 — text and binary file support |
-| `/showcase` | Planned | — |
-| `/lab` | Planned | — |
-| `/blog` | Planned | — |
-| `/journal` | Planned | — |
+| Route                        | Status  | Notes                                                  |
+| ---------------------------- | ------- | ------------------------------------------------------ |
+| `/`                          | Done    | Landing page                                           |
+| `/tools`                     | Done    | Tool directory — 2-col grid                            |
+| `/tools/jwt-decoder-encoder` | Done    | JWT decode / encode / verify — tab UI, HS256/384/512   |
+| `/tools/json-formatter`      | Done    | Format/beautify, compare 2 JSONs, tree view            |
+| `/tools/text-compare`        | Done    | Line-by-line text diff — inline and side-by-side modes |
+| `/tools/base64-codec`        | Done    | Encode/decode Base64 — text and binary file support    |
+| `/showcase`                  | Planned | —                                                      |
+| `/lab`                       | Planned | —                                                      |
+| `/blog`                      | Planned | —                                                      |
+| `/journal`                   | Planned | —                                                      |
 
 ## Design System (Terracotta Mono)
 
@@ -131,6 +200,7 @@ Full spec in `docs/DESIGN.md`. Critical rules:
 **Colors** (Tailwind tokens in `globals.css`):
 
 Light mode (default):
+
 - `parchment` (#FBF8F4) — primary bg
 - `ink` (#2C2420) — primary text, structural borders
 - `faded-ink` (#6B5A4E) — secondary/supporting text
@@ -141,6 +211,7 @@ Light mode (default):
 - `warm-canvas` (#F5EDE0) — secondary surfaces, hover backgrounds
 
 Dark mode (`.dark` class on `<html>`):
+
 - `parchment` → #1A1614, `warm-canvas` → #241F1B, `ink` → #EBE5DE
 - `faded-ink` → #A89888, `ghost-ink` → #7A6A5A
 - `terracotta` → #D4723D, `terracotta-pale` → #3A2820, `parchment-border` → #3A3028
@@ -148,6 +219,7 @@ Dark mode (`.dark` class on `<html>`):
 All Tailwind utilities auto-switch because `@theme inline` maps tokens to `var(--folio-*)` and the `.dark` class overrides those vars.
 
 **Typography:**
+
 - `font-display` → Playfair Display (h1–h6, display text). Italic variant used for emphasis/contrast.
 - `font-mono` → Montserrat (body, nav, labels, metadata). Default body is `font-mono font-light`.
 - All nav items, labels, overlines: **lowercase**
@@ -157,6 +229,7 @@ All Tailwind utilities auto-switch because `@theme inline` maps tokens to `var(-
 **Font weight note:** Body default is `font-light` (300). Any descriptive/body text that needs to be clearly readable must explicitly set `font-normal` (400). `font-light` is appropriate only for labels, nav, and metadata.
 
 **Borders:**
+
 - Structural: `border-2 border-ink` — nav bottom, major section breaks. **Globally renders as dashed** via `.border-ink` rule in `globals.css` (`border-style: dashed; border-color: rgb(44 36 32 / 0.28)`).
 - Section list dividers: `border-t border-dashed border-ghost-ink/40` — between list items
 - Content: `border-t-[0.5px] border-parchment-border` — fine dividers inside components
@@ -164,18 +237,21 @@ All Tailwind utilities auto-switch because `@theme inline` maps tokens to `var(-
 **Radius:** Max `rounded-xs` (2px). No pill shapes.
 
 **Animations:**
+
 - Page entrance: `.animate-fade-up` class (defined in `globals.css`) — `opacity 0→1` + `translateY 20px→0`, `0.7s cubic-bezier(0.16,1,0.3,1)`
 - Stagger with inline `style={{ animationDelay: "Xms" }}` (0ms, 80ms, 160ms, 200ms…)
 - Layout transition: `transitionClass` from `LayoutContext` — `duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)]`
 - Hover: `0.15s` color transitions only — no scale transforms
 
 **Hover pattern (list/card items):**
+
 ```tsx
-className="group ... hover:bg-warm-canvas/40 transition-colors duration-200"
+className = "group ... hover:bg-warm-canvas/40 transition-colors duration-200";
 // title inside:
-className="group-hover:text-terracotta transition-colors duration-200"
+className = "group-hover:text-terracotta transition-colors duration-200";
 // arrow inside:
-className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200"
+className =
+  "opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200";
 ```
 
 ## Adding a New Tool
@@ -189,6 +265,7 @@ Each tool uses a **server wrapper + client component** pattern so metadata can b
 5. Keep all logic client-side in `_client.tsx` — no server calls from tools.
 
 ### `page.tsx` (server wrapper)
+
 ```tsx
 import type { Metadata } from "next";
 import ToolNameClient from "./_client";
@@ -196,7 +273,10 @@ import ToolNameClient from "./_client";
 export const metadata: Metadata = {
   title: "Tool Name",
   description: "Tool description for SEO.",
-  openGraph: { title: "Tool Name · Folio", url: "https://folio.dev/tools/tool-name" },
+  openGraph: {
+    title: "Tool Name · Folio",
+    url: "https://folio.dev/tools/tool-name",
+  },
 };
 
 export default function ToolNamePage() {
@@ -205,6 +285,7 @@ export default function ToolNamePage() {
 ```
 
 ### `_client.tsx` header pattern
+
 ```tsx
 "use client";
 // ... imports
@@ -214,12 +295,16 @@ export default function ToolNameClient() {
   const { t } = useLocale();
 
   return (
-    <main className={`${maxWidthClass} ${transitionClass} mx-auto py-12 md:py-16`}>
+    <main
+      className={`${maxWidthClass} ${transitionClass} mx-auto py-12 md:py-16`}
+    >
       <div className="mb-10 border-b-2 border-ink pb-8">
         <div className="text-terracotta text-[11px] font-medium tracking-[0.15em] lowercase mb-4">
           {"// tools · tool-name"}
         </div>
-        <h1 className="text-[44px] font-display leading-tight mb-4">Tool Name</h1>
+        <h1 className="text-[44px] font-display leading-tight mb-4">
+          Tool Name
+        </h1>
         <p className="text-[15px] text-ink font-normal italic border-l-2 border-terracotta pl-4 max-w-xl">
           {t("toolName.description")}
         </p>
@@ -238,29 +323,30 @@ Reference: [web/src/app/tools/base64-codec/](web/src/app/tools/base64-codec/)
 
 ### Custom skills (this project)
 
-| Trigger | Skill |
-|---------|-------|
-| Tạo / scaffold / thêm tool mới | `/new-tool` |
-| Review / audit / kiểm tra design của component | `/design-check` |
-| Changelog / release notes / tổng kết thay đổi / what changed | `/changelog` |
-| Sẵn sàng deploy / kiểm tra trước deploy / pre-deployment | `/deploy-check` |
+| Trigger                                                      | Skill           |
+| ------------------------------------------------------------ | --------------- |
+| Tạo / scaffold / thêm tool mới                               | `/new-tool`        |
+| Review / audit / kiểm tra design của component               | `/design-check`    |
+| Changelog / release notes / tổng kết thay đổi / what changed | `/changelog`      |
+| Sẵn sàng deploy / kiểm tra trước deploy / pre-deployment     | `/deploy-check`    |
+| Verify / kiểm tra đồng bộ backend code và docs               | `/backend-verify`  |
 
 ### Plugin skills (installed)
 
-| Trigger | Skill |
-|---------|-------|
-| Hỏi về docs / API / cách dùng library (React, Next.js, Tailwind, Shiki, jose, shadcn, Biome, lucide…) | `context7` — fetch live docs trước khi trả lời |
-| Tạo UI component / page / interface mới với design quality cao | `frontend-design:frontend-design` |
-| Simplify / dọn / refactor code vừa viết | `simplify` |
-| Review PR / code review pull request | `code-review:code-review` |
-| Tạo / sửa / cải thiện skill | `skill-creator:skill-creator` |
-| Setup Claude Code automations / recommend hooks, skills, MCP | `claude-code-setup:claude-automation-recommender` |
-| Test UI trên browser / chụp screenshot / kiểm tra render | `playwright` |
-| Chạy task lặp lại theo interval / recurring | `loop` |
-| Schedule task / cron / chạy định kỳ | `schedule` |
-| Cấu hình Claude Code settings / thêm hook / sửa settings.json | `update-config` |
-| Đổi phím tắt / keyboard shortcut | `keybindings-help` |
-| Build app dùng Claude API / Anthropic SDK | `claude-api` |
+| Trigger                                                                                               | Skill                                             |
+| ----------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| Hỏi về docs / API / cách dùng library (React, Next.js, Tailwind, Shiki, jose, shadcn, Biome, lucide…) | `context7` — fetch live docs trước khi trả lời    |
+| Tạo UI component / page / interface mới với design quality cao                                        | `frontend-design:frontend-design`                 |
+| Simplify / dọn / refactor code vừa viết                                                               | `simplify`                                        |
+| Review PR / code review pull request                                                                  | `code-review:code-review`                         |
+| Tạo / sửa / cải thiện skill                                                                           | `skill-creator:skill-creator`                     |
+| Setup Claude Code automations / recommend hooks, skills, MCP                                          | `claude-code-setup:claude-automation-recommender` |
+| Test UI trên browser / chụp screenshot / kiểm tra render                                              | `playwright`                                      |
+| Chạy task lặp lại theo interval / recurring                                                           | `loop`                                            |
+| Schedule task / cron / chạy định kỳ                                                                   | `schedule`                                        |
+| Cấu hình Claude Code settings / thêm hook / sửa settings.json                                         | `update-config`                                   |
+| Đổi phím tắt / keyboard shortcut                                                                      | `keybindings-help`                                |
+| Build app dùng Claude API / Anthropic SDK                                                             | `claude-api`                                      |
 
 ### Priority rule
 

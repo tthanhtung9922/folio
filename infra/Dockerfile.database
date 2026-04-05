@@ -1,0 +1,7 @@
+FROM postgres:17-alpine
+
+# Timezone (optional)
+ENV TZ=Asia/Ho_Chi_Minh
+
+# Init script (optional)
+# COPY ./infra/db/init.sql /docker-entrypoint-initdb.d/
