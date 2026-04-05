@@ -32,7 +32,11 @@ yarn-error.log*
 
 # Docker
 *.tar
+
+# Claude Code — ignore personal settings, but keep project skills
 .claude/
+!.claude/skills/
+!.claude/skills/**
 
 # Obsidian
 .obsidian/

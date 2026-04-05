@@ -325,10 +325,11 @@ Reference: [web/src/app/tools/base64-codec/](web/src/app/tools/base64-codec/)
 
 | Trigger                                                      | Skill           |
 | ------------------------------------------------------------ | --------------- |
-| Tạo / scaffold / thêm tool mới                               | `/new-tool`     |
-| Review / audit / kiểm tra design của component               | `/design-check` |
-| Changelog / release notes / tổng kết thay đổi / what changed | `/changelog`    |
-| Sẵn sàng deploy / kiểm tra trước deploy / pre-deployment     | `/deploy-check` |
+| Tạo / scaffold / thêm tool mới                               | `/new-tool`        |
+| Review / audit / kiểm tra design của component               | `/design-check`    |
+| Changelog / release notes / tổng kết thay đổi / what changed | `/changelog`      |
+| Sẵn sàng deploy / kiểm tra trước deploy / pre-deployment     | `/deploy-check`    |
+| Verify / kiểm tra đồng bộ backend code và docs               | `/backend-verify`  |
 
 ### Plugin skills (installed)
 
