@@ -52,13 +52,13 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: folio
-      POSTGRES_USER: sa
-      POSTGRES_PASSWORD: A@a123456
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_dev_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U sa -d folio"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -68,7 +68,7 @@ volumes:
   postgres_dev_data:
 ```
 
-> **`POSTGRES_DB: folio`** — match với `Database=folio` trong `.env`. PostgreSQL tự tạo database này khi container khởi động lần đầu.
+> **`${POSTGRES_DB}`, `${POSTGRES_USER}`, `${POSTGRES_PASSWORD}`** — Docker Compose tự động đọc file `.env` ở repo root khi chạy lệnh từ đó, không cần khai báo thêm gì. Credentials chỉ cần đặt một chỗ trong `.env`, cả Docker Compose lẫn .NET app đều dùng chung.
 
 > **`healthcheck`:** `pg_isready` kiểm tra PostgreSQL đã sẵn sàng nhận kết nối chưa. `start_period: 10s` cho phép container có thời gian khởi động trước khi bắt đầu tính retries — tránh false failure khi init lần đầu chậm hơn bình thường.
 

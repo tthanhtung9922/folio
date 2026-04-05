@@ -9,10 +9,11 @@
 ## Tổng quan — sẽ tạo những gì
 
 ```
-api/
-├── .env                                    ← gitignored, chứa credentials thật
+folio/                                      ← repo root
+├── .env                                    ← gitignored, chứa credentials thật (dùng chung cho cả Docker Compose và .NET)
 ├── .env.example                            ← committed, template cho team
-└── src/
+└── api/
+    └── src/
     ├── Folio.Application/
     │   └── Common/
     │       └── Interfaces/
@@ -47,20 +48,19 @@ info : PackageReference for package 'DotNetEnv' version '3.1.1' added to file '.
 
 ---
 
-## Bước 2 — Tạo file `.env.example`
+## Bước 2 — Tạo file `.env.example` ở repo root
 
 File này được **commit vào Git** — là template để mọi người trong team biết cần set những biến gì, nhưng không chứa giá trị thật.
 
-Trong **Windows Terminal**, từ thư mục `api/`:
-
-```bash
-cd d:\Dev\Projects\Personal\folio\api
-```
-
-Tạo file `.env.example` bằng cách mở **Notepad** hoặc bất kỳ text editor nào, lưu vào `api/.env.example` với nội dung:
+Tạo file `.env.example` tại **thư mục gốc repo** (`folio/.env.example`) bằng cách mở Notepad hoặc VS Code, với nội dung:
 
 ```env
-# Database
+# PostgreSQL — dùng chung cho Docker Compose và .NET app
+POSTGRES_DB=folio
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+
+# Connection string cho .NET (phải khớp với 3 biến trên)
 ConnectionStrings__DefaultConnection=Host=localhost;Port=5432;Database=folio;Username=;Password=
 
 # ASP.NET Core
@@ -69,23 +69,30 @@ ASPNETCORE_ENVIRONMENT=Development
 
 ---
 
-## Bước 3 — Tạo file `.env`
+## Bước 3 — Tạo file `.env` ở repo root
 
-File này **KHÔNG được commit** (đã có trong `api/.gitignore` dòng `.env`).
+File này **KHÔNG được commit** — đã có trong `.gitignore` root dòng `.env*`.
 
-Tạo file `api/.env` (copy từ `.env.example`, điền giá trị thật):
+Tạo file `.env` tại **thư mục gốc repo** (`folio/.env`), copy từ `.env.example` và điền giá trị thật:
 
 ```env
-# Database
+# PostgreSQL — dùng chung cho Docker Compose và .NET app
+POSTGRES_DB=folio
+POSTGRES_USER=sa
+POSTGRES_PASSWORD=A@a123456
+
+# Connection string cho .NET (phải khớp với 3 biến trên)
 ConnectionStrings__DefaultConnection=Host=localhost;Port=5432;Database=folio;Username=sa;Password=A@a123456
 
 # ASP.NET Core
 ASPNETCORE_ENVIRONMENT=Development
 ```
 
-> **Naming convention `__`:** .NET config dùng `__` (double underscore) thay cho `:` để map từ env var vào cấu trúc JSON. `ConnectionStrings__DefaultConnection` tương đương `ConnectionStrings:DefaultConnection` — .NET tự parse, không cần cấu hình thêm gì.
+> **Tại sao đặt ở repo root?** Docker Compose tự động đọc `.env` từ thư mục hiện tại — khi chạy `docker compose -f infra/docker-compose.dev.yml up -d` từ repo root, nó tìm `folio/.env` ngay. .NET app dùng `Env.TraversePath().Load()` để tìm ngược lên từ `api/src/Folio.Api/` → `api/src/` → `api/` → `folio/` cho đến khi gặp file `.env`. Một file duy nhất, cả hai đều đọc được.
 
-> **Xác nhận `.env` đã bị ignore:** Trong **Windows Terminal** chạy `git status` từ thư mục gốc repo — file `api/.env` không được liệt kê. Nếu vẫn thấy, kiểm tra lại `api/.gitignore` có dòng `.env` chưa.
+> **Naming convention `__`:** .NET config dùng `__` (double underscore) thay cho `:` để map env var vào JSON config. `ConnectionStrings__DefaultConnection` tương đương `ConnectionStrings:DefaultConnection`.
+
+> **Xác nhận `.env` đã bị ignore:** Chạy `git status` từ repo root — không được thấy `.env` trong danh sách.
 
 ---
 
@@ -289,14 +296,14 @@ Lưu file: `Ctrl + S`.
 
 Trong **Solution Explorer** → double-click vào **`Program.cs`** trong project `Folio.Api`.
 
-Thêm `DotNetEnv.Env.Load()` **trước** `WebApplication.CreateBuilder` — phải load `.env` trước để .NET config system đọc được:
+Thêm `Env.TraversePath().Load()` **trước** `WebApplication.CreateBuilder` — phải load `.env` trước để .NET config system đọc được:
 
 ```csharp
 using DotNetEnv;
 using Folio.Infrastructure;
 
-// Load .env file trước khi build host (chỉ có tác dụng khi file tồn tại)
-Env.Load();
+// Tìm .env từ CWD ngược lên repo root (TraversePath tự tìm qua các thư mục cha)
+Env.TraversePath().Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -320,7 +327,7 @@ app.MapControllers();
 app.Run();
 ```
 
-> **`Env.Load()` không throw nếu file không tồn tại** — an toàn khi deploy production (không có `.env` file, chỉ dùng env vars). Hành vi mặc định: load file `.env` trong thư mục working directory của process (tức `api/src/Folio.Api/` khi chạy qua VS, hoặc `api/` khi chạy `dotnet run` từ `api/`).
+> **`Env.TraversePath().Load()`** — bắt đầu tìm `.env` từ thư mục working directory, rồi tìm lên các thư mục cha cho đến khi gặp file. Không throw nếu không tìm thấy — an toàn khi deploy production (chỉ dùng env vars, không có `.env` file).
 
 Lưu file: `Ctrl + S`.
 
@@ -356,10 +363,11 @@ Build succeeded.
 ## Kết quả sau bước này
 
 ```
-api/
-├── .env                    ← gitignored ✓
+folio/                      ← repo root
+├── .env                    ← gitignored ✓ (dùng chung Docker Compose + .NET)
 ├── .env.example            ← committed ✓
-└── src/
+└── api/
+    └── src/
     ├── Folio.Application/
     │   └── Common/Interfaces/
     │       └── IAppDbContext.cs         ✓
@@ -377,8 +385,8 @@ api/
 
 | Môi trường | Nguồn credentials |
 |---|---|
-| Local dev | `api/.env` — gitignored, mỗi dev tự tạo từ `.env.example` |
-| Docker Compose | `env_file:` trong compose file hoặc environment variables |
+| Local dev | `folio/.env` — gitignored, mỗi dev tự tạo từ `.env.example` |
+| Docker Compose (dev) | Tự đọc `folio/.env` natively khi chạy từ repo root |
 | Production/VPS | Environment variables inject từ Docker / systemd |
 
 ---
