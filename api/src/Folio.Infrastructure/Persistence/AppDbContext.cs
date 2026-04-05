@@ -1,7 +1,7 @@
 ﻿using Folio.Application.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Folio.Infrastructure.Persistance;
+namespace Folio.Infrastructure.Persistence;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IAppDbContext
 {

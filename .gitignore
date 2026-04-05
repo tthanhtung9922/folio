@@ -13,6 +13,7 @@ coverage/
 .DS_Store
 *.pem
 .env*
+!.env.example
 .vercel
 
 # TypeScript

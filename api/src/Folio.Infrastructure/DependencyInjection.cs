@@ -1,5 +1,5 @@
 ﻿using Folio.Application.Common.Interfaces;
-using Folio.Infrastructure.Persistance;
+using Folio.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

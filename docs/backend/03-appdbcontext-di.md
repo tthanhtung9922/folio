@@ -121,8 +121,6 @@ Trong **Solution Explorer**:
 **Xóa toàn bộ nội dung mặc định**, nhập:
 
 ```csharp
-using Microsoft.EntityFrameworkCore;
-
 namespace Folio.Application.Common.Interfaces;
 
 public interface IAppDbContext
@@ -133,6 +131,8 @@ public interface IAppDbContext
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
 ```
+
+> **Không có `using Microsoft.EntityFrameworkCore`** — Application layer không được phụ thuộc vào EF Core. `DbSet<T>` sẽ thêm sau khi cần entity, lúc đó mới thêm `using`.
 
 > **Tại sao interface này ở Application?** Application layer định nghĩa _hợp đồng_ — nó cần biết DbContext có những gì (các `DbSet`) để viết use cases, nhưng không được phụ thuộc vào EF Core implementation. Đây là Dependency Inversion: Application layer phụ thuộc vào abstraction, Infrastructure layer implement abstraction đó.
 
