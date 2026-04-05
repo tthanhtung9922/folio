@@ -150,6 +150,12 @@ Trong **PgAdmin** → mở rộng **folio-dev** → **Databases** → **folio** 
 
 Click chuột phải vào **Tables** → **Refresh** — phải thấy table **`__EFMigrationsHistory`**. Table này do EF Core tự tạo để theo dõi các migration đã được apply.
 
+> **Các message thường gặp khi chạy lại lệnh migration:**
+>
+> - `The name 'InitialCreate' is used by an existing migration` — Migration đã tồn tại, lệnh `add` bị bỏ qua. Đúng hành vi, không cần lo.
+> - `fail: ...Failed executing DbCommand... SELECT ... FROM "__EFMigrationsHistory"` — Không phải lỗi thật. EF Core cố SELECT từ bảng `__EFMigrationsHistory` để kiểm tra migration nào đã apply, nhưng bảng chưa tồn tại (database mới). EF Core tự tạo bảng đó rồi tiếp tục apply bình thường.
+> - `warn: No instantiatable types implementing IEntityTypeConfiguration` — Vô hại, do chưa có entity nào. Warning tự mất khi thêm entity sau này.
+
 ---
 
 ## Bước 5 — Kiểm tra app chạy được
