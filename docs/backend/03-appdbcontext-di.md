@@ -167,12 +167,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Folio.Infrastructure.Persistence;
 
-public class AppDbContext : DbContext, IAppDbContext
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IAppDbContext
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-    {
-    }
-
     // Thêm DbSet cho từng entity ở đây khi có entity
     // Ví dụ: public DbSet<Post> Posts => Set<Post>();
 
@@ -184,12 +180,14 @@ public class AppDbContext : DbContext, IAppDbContext
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
     }
 
-    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        return await base.SaveChangesAsync(cancellationToken);
+        return base.SaveChangesAsync(cancellationToken);
     }
 }
 ```
+
+> **Primary constructor (C# 12):** `AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)` là cú pháp constructor rút gọn — tương đương hoàn toàn với constructor truyền thống nhưng gọn hơn.
 
 > **`ApplyConfigurationsFromAssembly`:** Pattern này tự động quét và load tất cả class implement `IEntityTypeConfiguration<T>` trong cùng assembly. Giúp `OnModelCreating` luôn gọn, không phình to theo số entity.
 
@@ -302,7 +300,7 @@ Thêm `Env.TraversePath().Load()` **trước** `WebApplication.CreateBuilder` �
 using DotNetEnv;
 using Folio.Infrastructure;
 
-// Tìm .env từ CWD ngược lên repo root (TraversePath tự tìm qua các thư mục cha)
+// Load .env từ repo root (tìm ngược lên thư mục cha nếu không thấy ở CWD)
 Env.TraversePath().Load();
 
 var builder = WebApplication.CreateBuilder(args);
