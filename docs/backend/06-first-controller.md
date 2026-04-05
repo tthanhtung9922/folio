@@ -24,7 +24,7 @@ Trong **Visual Studio 2026**, mở **Solution Explorer** (`Ctrl + Alt + L`).
 
 Mở rộng project `Folio.Api` → click chuột phải vào folder **`Controllers`** → chọn **Add** → **New Item...**.
 
-> Nếu không thấy folder `Controllers` trong Solution Explorer: click chuột phải vào project `Folio.Api` → **Add** → **New Folder** → đặt tên `Controllers`.
+> **Không thấy folder `Controllers` trong Solution Explorer?** Folder tồn tại trên disk nhưng VS ẩn vì trống. Cách nhanh nhất: tạo file `PingController.cs` thẳng trong **VS Code** (hoặc File Explorer) tại đường dẫn `api/src/Folio.Api/Controllers/PingController.cs` — VS sẽ tự detect và hiển thị khi file có nội dung. **Không** dùng Add → New Folder vì sẽ báo lỗi "conflicts with existing folder".
 
 Trong hộp thoại **Add New Item**:
 1. Trong ô tìm kiếm (góc trên phải), gõ `API Controller`
