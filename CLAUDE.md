@@ -49,6 +49,8 @@ Trước khi viết hoặc cập nhật bất kỳ hướng dẫn backend nào, 
 
 1. **Toàn bộ docs hướng dẫn backend hiện có** trong `docs/backend/` — để biết đã hướng dẫn đến đâu, tránh mâu thuẫn hoặc lặp lại
 2. **Source code backend hiện tại** trong `api/` — đọc cấu trúc thư mục, xem những file nào đã tồn tại, packages nào đã cài, để hướng dẫn đúng với trạng thái thực tế của project
+3. **Thư mục `infra/`** — đọc các file docker-compose hiện có để tránh tạo trùng, hiểu naming convention, đảm bảo hướng dẫn infrastructure đồng bộ
+4. **Thư mục `web/`** — nắm cấu trúc frontend để hướng dẫn backend không mâu thuẫn với cách web gọi API (ports, endpoints, CORS, v.v.)
 
 Chỉ sau khi nắm đủ context mới được bắt đầu viết hướng dẫn mới.
 

@@ -23,6 +23,13 @@ api/src/Folio.Infrastructure/
 
 ## Bước 1 — Tạo `infra/docker-compose.dev.yml`
 
+> **Tại sao tạo file mới thay vì dùng file có sẵn?**
+> Thư mục `infra/` đã có 2 file compose:
+> - `docker-compose.poc.yml` — dùng để deploy production lên VPS, chỉ có service `web`
+> - `docker-compose.local.yml` — dùng để test production build của web trên máy local, chỉ có service `web`
+>
+> Cả hai không có service `db` và phục vụ mục đích hoàn toàn khác. File `docker-compose.dev.yml` mới dành riêng cho **môi trường phát triển** — chạy database local để code backend, không ảnh hưởng đến các file kia.
+
 Trong **Windows Terminal**, từ thư mục gốc repo:
 
 ```bash
