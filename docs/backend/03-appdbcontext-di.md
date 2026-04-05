@@ -1,7 +1,7 @@
 # Backend — Bước 3: AppDbContext, IAppDbContext, DI Registration
 
 > **Đợt:** 2A — Backend foundation
-> **Mục tiêu:** Tạo `IAppDbContext` interface trong Application, `AppDbContext` trong Infrastructure, đăng ký DI qua extension method, cấu hình connection string.
+> **Mục tiêu:** Tạo `IAppDbContext` interface trong Application, `AppDbContext` trong Infrastructure, đăng ký DI qua extension method, quản lý credentials bằng `.env` file.
 > **Trạng thái source hiện tại:** Các project còn trống, `Program.cs` là template gốc, chưa có ConnectionString trong appsettings.
 
 ---
@@ -9,24 +9,87 @@
 ## Tổng quan — sẽ tạo những gì
 
 ```
-api/src/
-├── Folio.Application/
-│   └── Common/
-│       └── Interfaces/
-│           └── IAppDbContext.cs        ← interface thuần, không có EF Core dependency
-├── Folio.Infrastructure/
-│   ├── Persistence/
-│   │   └── AppDbContext.cs             ← implement DbContext + IAppDbContext
-│   └── DependencyInjection.cs          ← extension method AddInfrastructure()
-└── Folio.Api/
-    ├── Program.cs                      ← thêm builder.Services.AddInfrastructure()
-    ├── appsettings.json                ← thêm ConnectionStrings (production placeholder)
-    └── appsettings.Development.json    ← thêm ConnectionStrings (dev local)
+api/
+├── .env                                    ← gitignored, chứa credentials thật
+├── .env.example                            ← committed, template cho team
+└── src/
+    ├── Folio.Application/
+    │   └── Common/
+    │       └── Interfaces/
+    │           └── IAppDbContext.cs        ← interface thuần, không có EF Core dependency
+    ├── Folio.Infrastructure/
+    │   ├── Persistence/
+    │   │   └── AppDbContext.cs             ← implement DbContext + IAppDbContext
+    │   └── DependencyInjection.cs          ← extension method AddInfrastructure()
+    └── Folio.Api/
+        ├── Program.cs                      ← load .env trước, rồi AddInfrastructure()
+        ├── appsettings.json                ← cấu trúc key, không có credentials
+        └── appsettings.Development.json    ← logging config cho dev
 ```
 
 ---
 
-## Bước 1 — Tạo thư mục `Common/Interfaces/` trong `Folio.Application`
+## Bước 1 — Cài package `DotNetEnv` vào `Folio.Api`
+
+`DotNetEnv` là thư viện đọc file `.env` và nạp vào environment variables của process — sau đó .NET config system tự đọc bình thường.
+
+Trong **Windows Terminal**, từ thư mục `api/`:
+
+```bash
+dotnet add src/Folio.Api/Folio.Api.csproj package DotNetEnv --version 3.1.1
+```
+
+Output kỳ vọng:
+
+```
+info : PackageReference for package 'DotNetEnv' version '3.1.1' added to file '...\Folio.Api.csproj'.
+```
+
+---
+
+## Bước 2 — Tạo file `.env.example`
+
+File này được **commit vào Git** — là template để mọi người trong team biết cần set những biến gì, nhưng không chứa giá trị thật.
+
+Trong **Windows Terminal**, từ thư mục `api/`:
+
+```bash
+cd d:\Dev\Projects\Personal\folio\api
+```
+
+Tạo file `.env.example` bằng cách mở **Notepad** hoặc bất kỳ text editor nào, lưu vào `api/.env.example` với nội dung:
+
+```env
+# Database
+ConnectionStrings__DefaultConnection=Host=localhost;Port=5432;Database=folio;Username=;Password=
+
+# ASP.NET Core
+ASPNETCORE_ENVIRONMENT=Development
+```
+
+---
+
+## Bước 3 — Tạo file `.env`
+
+File này **KHÔNG được commit** (đã có trong `api/.gitignore` dòng `.env`).
+
+Tạo file `api/.env` (copy từ `.env.example`, điền giá trị thật):
+
+```env
+# Database
+ConnectionStrings__DefaultConnection=Host=localhost;Port=5432;Database=folio;Username=sa;Password=A@a123456
+
+# ASP.NET Core
+ASPNETCORE_ENVIRONMENT=Development
+```
+
+> **Naming convention `__`:** .NET config dùng `__` (double underscore) thay cho `:` để map từ env var vào cấu trúc JSON. `ConnectionStrings__DefaultConnection` tương đương `ConnectionStrings:DefaultConnection` — .NET tự parse, không cần cấu hình thêm gì.
+
+> **Xác nhận `.env` đã bị ignore:** Trong **Windows Terminal** chạy `git status` từ thư mục gốc repo — file `api/.env` không được liệt kê. Nếu vẫn thấy, kiểm tra lại `api/.gitignore` có dòng `.env` chưa.
+
+---
+
+## Bước 4 — Tạo thư mục `Common/Interfaces/` trong `Folio.Application`
 
 Trong **Visual Studio 2026**, mở **Solution Explorer** (`Ctrl + Alt + L`):
 
@@ -39,7 +102,7 @@ Trong **Visual Studio 2026**, mở **Solution Explorer** (`Ctrl + Alt + L`):
 
 ---
 
-## Bước 2 — Tạo file `IAppDbContext.cs`
+## Bước 5 — Tạo file `IAppDbContext.cs`
 
 Trong **Solution Explorer**:
 
@@ -48,7 +111,7 @@ Trong **Solution Explorer**:
 3. Trong hộp thoại, tìm và chọn **Interface**
 4. Đặt tên `IAppDbContext.cs` → click **Add**
 
-Visual Studio sẽ tạo file và mở ra editor. **Xóa toàn bộ nội dung mặc định**, sau đó nhập nội dung sau:
+**Xóa toàn bộ nội dung mặc định**, nhập:
 
 ```csharp
 using Microsoft.EntityFrameworkCore;
@@ -70,7 +133,7 @@ Lưu file: `Ctrl + S`.
 
 ---
 
-## Bước 3 — Tạo thư mục `Persistence/` trong `Folio.Infrastructure`
+## Bước 6 — Tạo thư mục `Persistence/` trong `Folio.Infrastructure`
 
 Trong **Solution Explorer**:
 
@@ -80,7 +143,7 @@ Trong **Solution Explorer**:
 
 ---
 
-## Bước 4 — Tạo file `AppDbContext.cs`
+## Bước 7 — Tạo file `AppDbContext.cs`
 
 Trong **Solution Explorer**:
 
@@ -121,15 +184,13 @@ public class AppDbContext : DbContext, IAppDbContext
 }
 ```
 
-> **`ApplyConfigurationsFromAssembly`:** Thay vì cấu hình entity trực tiếp trong `OnModelCreating`, pattern này tự động quét và load tất cả class implement `IEntityTypeConfiguration<T>` trong cùng assembly. Giúp `OnModelCreating` luôn gọn, không phình to theo số entity.
+> **`ApplyConfigurationsFromAssembly`:** Pattern này tự động quét và load tất cả class implement `IEntityTypeConfiguration<T>` trong cùng assembly. Giúp `OnModelCreating` luôn gọn, không phình to theo số entity.
 
 Lưu file: `Ctrl + S`.
 
 ---
 
-## Bước 5 — Tạo file `DependencyInjection.cs` trong `Folio.Infrastructure`
-
-Đây là extension method để đăng ký tất cả services của Infrastructure layer. `Program.cs` chỉ cần gọi một lệnh duy nhất.
+## Bước 8 — Tạo file `DependencyInjection.cs` trong `Folio.Infrastructure`
 
 Trong **Solution Explorer**:
 
@@ -169,19 +230,17 @@ public static class DependencyInjection
 }
 ```
 
-> **`AddScoped<IAppDbContext>`:** Dòng này đăng ký mapping `IAppDbContext → AppDbContext` trong DI container. Khi một use case trong Application layer yêu cầu `IAppDbContext` qua constructor injection, DI sẽ trả về instance `AppDbContext` đã được cấu hình sẵn.
-
-> **`?? throw`:** Pattern này fail fast — nếu connection string bị thiếu (ví dụ quên set env var khi deploy), app sẽ crash ngay lúc khởi động thay vì crash runtime khi có request đầu tiên. Dễ debug hơn nhiều.
+> **`?? throw`:** Fail fast — nếu `.env` bị thiếu hoặc key sai tên, app crash ngay lúc khởi động thay vì crash runtime khi có request. Dễ debug hơn nhiều.
 
 Lưu file: `Ctrl + S`.
 
 ---
 
-## Bước 6 — Cập nhật `appsettings.json`
+## Bước 9 — Cập nhật `appsettings.json`
 
-Trong **Solution Explorer**, mở rộng project **`Folio.Api`** → double-click vào **`appsettings.json`**.
+Trong **Solution Explorer** → double-click vào **`appsettings.json`** trong project `Folio.Api`.
 
-Thêm block `ConnectionStrings` với **cấu trúc key nhưng không có credentials** — giá trị thật sẽ được inject bên ngoài:
+File này chỉ khai báo **cấu trúc key**, không có credentials:
 
 ```json
 {
@@ -198,17 +257,15 @@ Thêm block `ConnectionStrings` với **cấu trúc key nhưng không có creden
 }
 ```
 
-> **Tại sao để trống?** File `appsettings.json` được commit vào Git. Không bao giờ đặt credentials thật ở đây. Giá trị thật được inject qua **User Secrets** (local dev) hoặc **environment variable** (production/Docker) — .NET config tự động merge và ưu tiên các nguồn đó.
-
 Lưu file: `Ctrl + S`.
 
 ---
 
-## Bước 7 — Cập nhật `appsettings.Development.json`
+## Bước 10 — Cập nhật `appsettings.Development.json`
 
-Trong **Solution Explorer**, double-click vào **`appsettings.Development.json`**.
+Trong **Solution Explorer** → double-click vào **`appsettings.Development.json`**.
 
-File này cũng được commit vào Git — chỉ đặt cấu hình non-sensitive:
+Chỉ đặt logging config — bật SQL query log khi chạy local:
 
 ```json
 {
@@ -222,85 +279,31 @@ File này cũng được commit vào Git — chỉ đặt cấu hình non-sensit
 }
 ```
 
-> **`Microsoft.EntityFrameworkCore.Database.Command: Information`** — bật log SQL queries ra console khi chạy local. Giúp debug dễ hơn nhiều, thấy được EF Core đang generate SQL gì.
+> **`Microsoft.EntityFrameworkCore.Database.Command: Information`** — hiển thị SQL queries EF Core generate ra console. Rất hữu ích khi debug.
 
 Lưu file: `Ctrl + S`.
 
 ---
 
-## Bước 7B — Cài credentials local bằng User Secrets
+## Bước 11 — Cập nhật `Program.cs`
 
-**User Secrets** là cơ chế của .NET để lưu secrets **ngoài repo**, trong thư mục riêng trên máy (`%APPDATA%\Microsoft\UserSecrets\`). File này không bao giờ bị commit vào Git dù vô tình.
+Trong **Solution Explorer** → double-click vào **`Program.cs`** trong project `Folio.Api`.
 
-### Khởi tạo User Secrets cho project
-
-Trong **Windows Terminal**, từ thư mục `api/`:
-
-```bash
-dotnet user-secrets init --project src/Folio.Api/Folio.Api.csproj
-```
-
-Output kỳ vọng:
-
-```
-Set UserSecretsId to 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' for MSBuild project '...\Folio.Api.csproj'.
-```
-
-### Set connection string
-
-```bash
-dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=folio;Username=sa;Password=A@a123456" --project src/Folio.Api/Folio.Api.csproj
-```
-
-Output kỳ vọng:
-
-```
-Successfully saved ConnectionStrings:DefaultConnection = Host=localhost;... to the secret store.
-```
-
-### Kiểm tra
-
-```bash
-dotnet user-secrets list --project src/Folio.Api/Folio.Api.csproj
-```
-
-Output kỳ vọng:
-
-```
-ConnectionStrings:DefaultConnection = Host=localhost;Port=5432;Database=folio;Username=sa;Password=A@a123456
-```
-
-> **Hoạt động như thế nào?** .NET config system có thứ tự ưu tiên: `appsettings.json` → `appsettings.Development.json` → **User Secrets** → **Environment Variables**. Nguồn sau ghi đè nguồn trước. User Secrets chỉ active khi `ASPNETCORE_ENVIRONMENT=Development` (mặc định khi chạy local qua VS hoặc `dotnet run`).
-
----
-
-## Tham khảo — Environment Variables cho production/Docker
-
-Khi deploy, inject connection string qua environment variable (không cần User Secrets):
-
-```
-ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=folio;Username=sa;Password=A@a123456
-```
-
-> **`__` (double underscore):** .NET config dùng `__` thay cho `:` trong tên env var. `ConnectionStrings__DefaultConnection` tương đương `ConnectionStrings:DefaultConnection` trong JSON. Đây là convention chuẩn, hoạt động trên cả Linux và Windows.
-
----
-
-## Bước 8 — Cập nhật `Program.cs`
-
-Trong **Solution Explorer**, double-click vào **`Program.cs`** trong project `Folio.Api`.
-
-Thêm dòng `AddInfrastructure` vào sau `AddControllers()`:
+Thêm `DotNetEnv.Env.Load()` **trước** `WebApplication.CreateBuilder` — phải load `.env` trước để .NET config system đọc được:
 
 ```csharp
+using DotNetEnv;
 using Folio.Infrastructure;
+
+// Load .env file trước khi build host (chỉ có tác dụng khi file tồn tại)
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
-builder.Services.AddInfrastructure(builder.Configuration);  // ← thêm dòng này
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
@@ -317,13 +320,13 @@ app.MapControllers();
 app.Run();
 ```
 
-> **`using Folio.Infrastructure;`** cần thêm ở đầu file để trình biên dịch tìm thấy extension method `AddInfrastructure`.
+> **`Env.Load()` không throw nếu file không tồn tại** — an toàn khi deploy production (không có `.env` file, chỉ dùng env vars). Hành vi mặc định: load file `.env` trong thư mục working directory của process (tức `api/src/Folio.Api/` khi chạy qua VS, hoặc `api/` khi chạy `dotnet run` từ `api/`).
 
 Lưu file: `Ctrl + S`.
 
 ---
 
-## Bước 9 — Kiểm tra build
+## Bước 12 — Kiểm tra build
 
 Trong **Windows Terminal**, từ thư mục `api/`:
 
@@ -343,28 +346,40 @@ Build succeeded.
 
 | Lỗi | Nguyên nhân | Cách fix |
 |---|---|---|
-| `The type or namespace 'IAppDbContext' could not be found` | Thiếu `using` hoặc sai namespace | Kiểm tra namespace trong `IAppDbContext.cs` là `Folio.Application.Common.Interfaces` |
-| `'AppDbContext' does not implement interface member 'SaveChangesAsync'` | Chưa override `SaveChangesAsync` | Xem lại Bước 4 |
-| `Connection string 'DefaultConnection' not found` | Thiếu key trong appsettings | Kiểm tra lại Bước 6–7 |
+| `The type or namespace 'IAppDbContext' could not be found` | Sai namespace | Kiểm tra namespace trong `IAppDbContext.cs` là `Folio.Application.Common.Interfaces` |
+| `'AppDbContext' does not implement interface member 'SaveChangesAsync'` | Thiếu override | Xem lại Bước 7 |
+| `Connection string 'DefaultConnection' not found` | `.env` chưa được load hoặc sai key | Kiểm tra `Env.Load()` ở đầu `Program.cs` và tên biến trong `.env` |
+| `The type or namespace 'DotNetEnv' could not be found` | Chưa cài package | Chạy lại Bước 1 |
 
 ---
 
 ## Kết quả sau bước này
 
 ```
-api/src/
-├── Folio.Application/
-│   └── Common/Interfaces/
-│       └── IAppDbContext.cs       ✓
-├── Folio.Infrastructure/
-│   ├── Persistence/
-│   │   └── AppDbContext.cs        ✓
-│   └── DependencyInjection.cs     ✓
-└── Folio.Api/
-    ├── Program.cs                 ✓ (đã thêm AddInfrastructure)
-    ├── appsettings.json           ✓ (đã thêm ConnectionStrings)
-    └── appsettings.Development.json ✓ (credentials dev local)
+api/
+├── .env                    ← gitignored ✓
+├── .env.example            ← committed ✓
+└── src/
+    ├── Folio.Application/
+    │   └── Common/Interfaces/
+    │       └── IAppDbContext.cs         ✓
+    ├── Folio.Infrastructure/
+    │   ├── Persistence/
+    │   │   └── AppDbContext.cs          ✓
+    │   └── DependencyInjection.cs       ✓
+    └── Folio.Api/
+        ├── Program.cs                   ✓ (Env.Load() + AddInfrastructure)
+        ├── appsettings.json             ✓ (key structure, no credentials)
+        └── appsettings.Development.json ✓ (logging only)
 ```
+
+**Luồng config theo môi trường:**
+
+| Môi trường | Nguồn credentials |
+|---|---|
+| Local dev | `api/.env` — gitignored, mỗi dev tự tạo từ `.env.example` |
+| Docker Compose | `env_file:` trong compose file hoặc environment variables |
+| Production/VPS | Environment variables inject từ Docker / systemd |
 
 ---
 
