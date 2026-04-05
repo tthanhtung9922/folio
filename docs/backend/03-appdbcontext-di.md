@@ -55,44 +55,58 @@ File này được **commit vào Git** — là template để mọi người tro
 Tạo file `.env.example` tại **thư mục gốc repo** (`folio/.env.example`) bằng cách mở Notepad hoặc VS Code, với nội dung:
 
 ```env
-# PostgreSQL — dùng chung cho Docker Compose và .NET app
+PROJECT_NAME=folio
+ENV=dev
+
+# PostgreSQL
 POSTGRES_DB=folio
 POSTGRES_USER=
 POSTGRES_PASSWORD=
 
-# Connection string cho .NET (phải khớp với 3 biến trên)
+# Database
 ConnectionStrings__DefaultConnection=Host=localhost;Port=5432;Database=folio;Username=;Password=
 
 # ASP.NET Core
 ASPNETCORE_ENVIRONMENT=Development
+
+# Ports
+POSTGRES_PORT=5432
+WEB_PORT=3000
 ```
 
 ---
 
-## Bước 3 — Tạo file `.env` ở repo root
+## Bước 3 — Tạo file `.env.dev` ở repo root
 
-File này **KHÔNG được commit** — đã có trong `.gitignore` root dòng `.env*`.
+File này **KHÔNG được commit** — đã có trong `.gitignore` root dòng `.env*` (chỉ trừ `.env.example`).
 
-Tạo file `.env` tại **thư mục gốc repo** (`folio/.env`), copy từ `.env.example` và điền giá trị thật:
+Tạo file `.env.dev` tại **thư mục gốc repo** (`folio/.env.dev`), copy từ `.env.example` và điền giá trị thật:
 
 ```env
-# PostgreSQL — dùng chung cho Docker Compose và .NET app
+PROJECT_NAME=folio
+ENV=dev
+
+# PostgreSQL
 POSTGRES_DB=folio
 POSTGRES_USER=sa
 POSTGRES_PASSWORD=A@a123456
 
-# Connection string cho .NET (phải khớp với 3 biến trên)
+# Database
 ConnectionStrings__DefaultConnection=Host=localhost;Port=5432;Database=folio;Username=sa;Password=A@a123456
 
 # ASP.NET Core
 ASPNETCORE_ENVIRONMENT=Development
+
+# Ports
+POSTGRES_PORT=5432
+WEB_PORT=3000
 ```
 
-> **Tại sao đặt ở repo root?** Docker Compose tự động đọc `.env` từ thư mục hiện tại — khi chạy `docker compose -f infra/docker-compose.dev.yml up -d` từ repo root, nó tìm `folio/.env` ngay. .NET app dùng `Env.TraversePath().Load()` để tìm ngược lên từ `api/src/Folio.Api/` → `api/src/` → `api/` → `folio/` cho đến khi gặp file `.env`. Một file duy nhất, cả hai đều đọc được.
+> **Tại sao đặt ở repo root?** Docker Compose cần đọc file này khi chạy lệnh từ repo root — truyền qua flag `--env-file .env.dev`. .NET app dùng `Env.TraversePath().Load()` để tìm ngược lên từ `api/src/Folio.Api/` → `api/src/` → `api/` → `folio/` cho đến khi gặp file `.env.dev`. Một file duy nhất, cả hai đều đọc được.
 
 > **Naming convention `__`:** .NET config dùng `__` (double underscore) thay cho `:` để map env var vào JSON config. `ConnectionStrings__DefaultConnection` tương đương `ConnectionStrings:DefaultConnection`.
 
-> **Xác nhận `.env` đã bị ignore:** Chạy `git status` từ repo root — không được thấy `.env` trong danh sách.
+> **Xác nhận `.env.dev` đã bị ignore:** Chạy `git status` từ repo root — không được thấy `.env.dev` trong danh sách.
 
 ---
 
@@ -294,7 +308,7 @@ Lưu file: `Ctrl + S`.
 
 Trong **Solution Explorer** → double-click vào **`Program.cs`** trong project `Folio.Api`.
 
-Thêm `Env.TraversePath().Load()` **trước** `WebApplication.CreateBuilder` — phải load `.env` trước để .NET config system đọc được:
+Thêm `Env.TraversePath().Load()` **trước** `WebApplication.CreateBuilder` — phải load `.env.dev` trước để .NET config system đọc được:
 
 ```csharp
 using DotNetEnv;
@@ -325,7 +339,7 @@ app.MapControllers();
 app.Run();
 ```
 
-> **`Env.TraversePath().Load()`** — bắt đầu tìm `.env` từ thư mục working directory, rồi tìm lên các thư mục cha cho đến khi gặp file. Không throw nếu không tìm thấy — an toàn khi deploy production (chỉ dùng env vars, không có `.env` file).
+> **`Env.TraversePath().Load()`** — bắt đầu tìm `.env` (hoặc `.env.dev`, `.env.prod`) từ thư mục working directory, rồi tìm lên các thư mục cha cho đến khi gặp file. Không throw nếu không tìm thấy — an toàn khi deploy production (chỉ dùng env vars, không có `.env` file).
 
 Lưu file: `Ctrl + S`.
 
@@ -362,7 +376,7 @@ Build succeeded.
 
 ```
 folio/                      ← repo root
-├── .env                    ← gitignored ✓ (dùng chung Docker Compose + .NET)
+├── .env.dev                ← gitignored ✓ (dùng chung Docker Compose + .NET)
 ├── .env.example            ← committed ✓
 └── api/
     └── src/
@@ -383,10 +397,10 @@ folio/                      ← repo root
 
 | Môi trường | Nguồn credentials |
 |---|---|
-| Local dev | `folio/.env` — gitignored, mỗi dev tự tạo từ `.env.example` |
-| Docker Compose (dev) | Tự đọc `folio/.env` natively khi chạy từ repo root |
+| Local dev | `folio/.env.dev` — gitignored, mỗi dev tự tạo từ `.env.example` |
+| Docker Compose (dev) | Truyền qua `--env-file .env.dev` khi chạy từ repo root |
 | Production/VPS | Environment variables inject từ Docker / systemd |
 
 ---
 
-**Tiếp theo:** [04-docker-postgres-local.md](04-docker-postgres-local.md) — Chạy PostgreSQL local bằng Docker Compose, kiểm tra kết nối, tạo migration đầu tiên.
+**Tiếp theo:** [04-docker-postgres-migration.md](04-docker-postgres-migration.md) — Chạy PostgreSQL local bằng Docker Compose, kiểm tra kết nối, tạo migration đầu tiên.
