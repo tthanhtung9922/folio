@@ -6,6 +6,7 @@
 > - `Microsoft.EntityFrameworkCore` / `.Design` / `.Tools` → `10.0.5`
 > - `Npgsql.EntityFrameworkCore.PostgreSQL` → `10.0.1`
 > - `dotnet-ef` global tool → `10.0.5`
+> - `DotNetEnv` → `3.1.1` (load `.env` file cho credentials)
 
 ---
 
@@ -89,13 +90,19 @@ info : PackageReference for package 'Npgsql.EntityFrameworkCore.PostgreSQL' vers
 
 ## Bước 3 — Cài packages cho `Folio.Api`
 
-`Folio.Api` là startup project — nơi `dotnet ef` sẽ tìm connection string và khởi động app để chạy migrations. Cần thêm `Microsoft.EntityFrameworkCore.Design` ở đây:
+`Folio.Api` là startup project — cần 2 packages:
 
 ```bash
+# dotnet ef cần Design để discover DbContext khi chạy migrations
 dotnet add src/Folio.Api/Folio.Api.csproj package Microsoft.EntityFrameworkCore.Design --version 10.0.5
+
+# DotNetEnv — đọc file .env và nạp vào environment variables trước khi host khởi động
+dotnet add src/Folio.Api/Folio.Api.csproj package DotNetEnv --version 3.1.1
 ```
 
 > **Tại sao Api cũng cần Design?** Khi chạy `dotnet ef migrations add`, tool sẽ build và khởi động startup project (`Folio.Api`) để discover DbContext. Nếu startup project không có Design package, lệnh sẽ báo lỗi `Unable to create an object of type 'AppDbContext'`.
+
+> **DotNetEnv:** .NET không đọc `.env` natively như Node.js. Package này load file `api/.env` và inject vào environment variables của process — sau đó .NET config system đọc bình thường qua `configuration.GetConnectionString(...)`. Không cần `DotNetEnv` ở Infrastructure hay Domain vì chỉ có `Folio.Api` (entry point) mới cần load file này.
 
 ---
 
@@ -151,10 +158,10 @@ dotnet list src/Folio.Infrastructure/Folio.Infrastructure.csproj package
 | `Folio.Domain` | _(không có)_ |
 | `Folio.Application` | _(không có)_ |
 | `Folio.Infrastructure` | `Npgsql.EntityFrameworkCore.PostgreSQL 10.0.1`, `Microsoft.EntityFrameworkCore.Design 10.0.5` |
-| `Folio.Api` | `Microsoft.EntityFrameworkCore.Design 10.0.5` |
+| `Folio.Api` | `Microsoft.EntityFrameworkCore.Design 10.0.5`, `DotNetEnv 3.1.1` |
 
 **`dotnet-ef` tool:** Đã cài global, version `10.0.5`.
 
 ---
 
-**Tiếp theo:** [03-appdbcontext.md](03-appdbcontext.md) — Tạo `AppDbContext`, interface `IAppDbContext`, đăng ký DI trong `Folio.Api`.
+**Tiếp theo:** [03-appdbcontext-di.md](03-appdbcontext-di.md) — Tạo `AppDbContext`, interface `IAppDbContext`, đăng ký DI, cấu hình `.env` file.

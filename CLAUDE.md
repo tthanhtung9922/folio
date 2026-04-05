@@ -52,6 +52,12 @@ Trước khi viết hoặc cập nhật bất kỳ hướng dẫn backend nào, 
 
 Chỉ sau khi nắm đủ context mới được bắt đầu viết hướng dẫn mới.
 
+### Bắt buộc đồng bộ tất cả documents khi có thay đổi
+
+Khi cập nhật hoặc thêm mới bất kỳ thông tin nào (package mới, approach mới, thay đổi cấu trúc...), Claude **PHẢI** kiểm tra toàn bộ `docs/backend/` để tìm các chỗ liên quan và cập nhật đồng bộ. Không được để các doc mâu thuẫn nhau.
+
+Ví dụ: thêm package `DotNetEnv` vào bước 3 → phải cập nhật bảng packages ở bước 2, cập nhật link "Tiếp theo" nếu sai tên file, v.v.
+
 ### Bắt buộc research web trước khi hướng dẫn backend
 
 Trước khi viết hoặc cập nhật bất kỳ hướng dẫn backend nào, Claude **PHẢI** dùng `WebSearch` để tìm thông tin mới nhất. Không được dựa vào training data vì .NET / EF Core / ASP.NET Core thay đổi nhanh và có nhiều breaking changes giữa các phiên bản.
