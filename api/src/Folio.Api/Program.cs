@@ -1,5 +1,6 @@
 using DotNetEnv;
 using Folio.Infrastructure;
+using Scalar.AspNetCore;
 
 // Load .env từ repo root (tìm ngược lên thư mục cha nếu không thấy ở CWD)
 Env.TraversePath().Load();
@@ -17,10 +18,12 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference(); // Tự động tạo tài liệu API cho Scalar.AspNetCore
 }
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 app.Run();

@@ -158,7 +158,9 @@ dotnet list src/Folio.Infrastructure/Folio.Infrastructure.csproj package
 | `Folio.Domain` | _(không có)_ |
 | `Folio.Application` | _(không có)_ |
 | `Folio.Infrastructure` | `Npgsql.EntityFrameworkCore.PostgreSQL 10.0.1`, `Microsoft.EntityFrameworkCore.Design 10.0.5` |
-| `Folio.Api` | `Microsoft.EntityFrameworkCore.Design 10.0.5`, `DotNetEnv 3.1.1` |
+| `Folio.Api` | `Microsoft.EntityFrameworkCore.Design 10.0.5`, `DotNetEnv 3.1.1`, `Microsoft.AspNetCore.OpenApi 10.0.5` _(template)_, `Scalar.AspNetCore 2.13.20` _(template)_ |
+
+> **Lưu ý:** `Microsoft.AspNetCore.OpenApi` và `Scalar.AspNetCore` được `dotnet new webapi` tạo sẵn trong template — không cần cài thêm. `Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore` sẽ thêm vào `Folio.Infrastructure` ở [Bước 5](05-health-check.md).
 
 **`dotnet-ef` tool:** Đã cài global, version `10.0.5`.
 

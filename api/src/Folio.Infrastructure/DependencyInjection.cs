@@ -18,6 +18,10 @@ public static class DependencyInjection
         // Khi một use case trong Application layer yêu cầu IAppDbContext qua constructor injection, DI sẽ trả về instance AppDbContext đã được cấu hình sẵn.
         services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
 
+        // Đăng ký health check để kiểm tra kết nối đến database.
+        // Khi health check được gọi, nó sẽ sử dụng AppDbContext để xác minh rằng ứng dụng có thể kết nối và truy cập cơ sở dữ liệu một cách bình thường.
+        services.AddHealthChecks().AddDbContextCheck<AppDbContext>();
+
         return services;
     }
 }
