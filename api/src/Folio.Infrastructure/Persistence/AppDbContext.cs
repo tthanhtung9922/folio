@@ -1,4 +1,5 @@
 ﻿using Folio.Application.Common.Interfaces;
+using Folio.Domain.Showcase;
 using Microsoft.EntityFrameworkCore;
 
 namespace Folio.Infrastructure.Persistence;
@@ -7,6 +8,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 {
     // Thêm DbSet cho từng entity ở đây khi có entity
     // Ví dụ: public DbSet<Post> Posts => Set<Post>();
+    public DbSet<Project> Projects => Set<Project>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

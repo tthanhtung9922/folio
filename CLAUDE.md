@@ -47,12 +47,15 @@ Ví dụ không đạt:
 
 Trước khi viết hoặc cập nhật bất kỳ hướng dẫn backend nào, Claude **PHẢI** đọc:
 
-1. **Toàn bộ docs hướng dẫn backend hiện có** trong `docs/backend/` — để biết đã hướng dẫn đến đâu, tránh mâu thuẫn hoặc lặp lại
-2. **Source code backend hiện tại** trong `api/` — đọc cấu trúc thư mục, xem những file nào đã tồn tại, packages nào đã cài, để hướng dẫn đúng với trạng thái thực tế của project
-3. **Thư mục `infra/`** — đọc các file docker-compose hiện có để tránh tạo trùng, hiểu naming convention, đảm bảo hướng dẫn infrastructure đồng bộ
-4. **Thư mục `web/`** — nắm cấu trúc frontend để hướng dẫn backend không mâu thuẫn với cách web gọi API (ports, endpoints, CORS, v.v.)
+1. **Toàn bộ docs overview** trong `docs/overview/` — để hiểu vision, architecture, DDD structure, tech stack đã quyết định. Đây là nguồn sự thật về **"bức tranh lớn"** — mọi hướng dẫn phải nhất quán với các quyết định kiến trúc đã được ghi lại ở đây (folder structure, aggregate boundaries, tech choices, v.v.)
+2. **Toàn bộ docs hướng dẫn backend hiện có** trong `docs/backend/` — để biết đã hướng dẫn đến đâu, tránh mâu thuẫn hoặc lặp lại
+3. **Source code backend hiện tại** trong `api/` — đọc cấu trúc thư mục, xem những file nào đã tồn tại, packages nào đã cài, để hướng dẫn đúng với trạng thái thực tế của project
+4. **Thư mục `infra/`** — đọc các file docker-compose hiện có để tránh tạo trùng, hiểu naming convention, đảm bảo hướng dẫn infrastructure đồng bộ
+5. **Thư mục `web/`** — nắm cấu trúc frontend để hướng dẫn backend không mâu thuẫn với cách web gọi API (ports, endpoints, CORS, v.v.)
 
 Chỉ sau khi nắm đủ context mới được bắt đầu viết hướng dẫn mới.
+
+> **Tại sao `docs/overview/` phải đọc đầu tiên?** Đây là bài học từ thực tế: guide 07 ban đầu hướng dẫn tạo `Folio.Domain/Entities/Project.cs` (generic flat), nhưng `docs/overview/03-folio-architecture.md` đã quy định DDD folder structure với aggregates (`Showcase/`, `Blog/`, `Journal/`) và `Common/` base classes. Không đọc overview → hướng dẫn sai kiến trúc ngay từ đầu.
 
 ### Bắt buộc đồng bộ tất cả documents khi có thay đổi
 

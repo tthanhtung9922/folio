@@ -245,7 +245,7 @@ Healthy
 | Project | Packages |
 |---|---|
 | `Folio.Domain` | _(không có)_ |
-| `Folio.Application` | _(không có)_ |
+| `Folio.Application` | _(không có)_ — `Microsoft.EntityFrameworkCore 10.0.5` sẽ thêm ở [Bước 7](07-domain-entity.md) |
 | `Folio.Infrastructure` | `Npgsql.EntityFrameworkCore.PostgreSQL 10.0.1`, `Microsoft.EntityFrameworkCore.Design 10.0.5`, `Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore 10.0.5` |
 | `Folio.Api` | `Microsoft.EntityFrameworkCore.Design 10.0.5`, `DotNetEnv 3.1.1`, `Microsoft.AspNetCore.OpenApi 10.0.5`, `Scalar.AspNetCore 2.13.20` |
 
